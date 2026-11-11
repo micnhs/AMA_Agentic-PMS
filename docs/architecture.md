@@ -522,7 +522,7 @@ Central; preflight fallback Germany West Central). Tags: `azd-env-name`, `worklo
 | Budget | Cost notifications | Resource group, default 250 USD per month ([ADR-010](adr/ADR-010.md)) |
 | Azure Policy assignments | Only the selected region allowed (enforced); required tag `workload` (report only) | Resource group |
 | Communication Services with Email | Alert e-mail | Azure-managed domain; data location Europe (OI-012) |
-| Entra app registration | Sign-in and app roles | Microsoft Graph Bicep extension; fallback: bring your own registration (OI-013) |
+| Entra app registration | Sign-in and app roles | Microsoft Graph Bicep extension; fallback: bring your own registration, created with `scripts/create-app-registration.*` (OI-013, OI-049) |
 | User-assigned managed identity | Access to Foundry, AI Search, Cosmos DB, Storage, Communication Services, registry and cost data | Least-privilege roles (table below) |
 
 Outside the resource group: a custom role "PMS demo ACS e-mail sender" at subscription level (assignable

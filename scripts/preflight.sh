@@ -2,9 +2,9 @@
 # Preflight checks before 'azd provision' (also the azd preprovision hook).
 # Every failed check stops with one plain line: the problem and the fix.
 # Usage: bash scripts/preflight.sh [--hook]
-# Checks: tools, login, region, providers, rbac, entra, models, quota, agents, definitions, email,
-#         costapi (warning only), bicep, softdelete. Skip one only if you know why it is a false
-#         alarm: PREFLIGHT_SKIP="quota,bicep"
+# Checks: tools, login, region, providers, rbac, entra (entra-probe: a test app registration is
+#         created and deleted), models, quota, agents, definitions, email, costapi (warning only),
+#         bicep, softdelete. Skip one only if you know why it is a false alarm: PREFLIGHT_SKIP="quota,bicep"
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -116,7 +116,14 @@ if ! skipped rbac; then
 fi
 
 # --- Entra app registration right (or bring your own) ------------------------------------------
+# The deployment creates the app registration and its enterprise application with your sign-in
+# (Microsoft Graph Bicep extension). The tenant setting "Users can register applications" alone does
+# not prove that right (guest accounts, tenant policies; Gate C, cycle 15), so the check creates a test
+# registration and deletes it again (lib/entra_app.py probe). PREFLIGHT_SKIP=entra-probe checks only the
+# tenant setting and your directory roles.
 existing_app="$(pms_value ENTRA_EXISTING_APP_CLIENT_ID)"
+created_app=""
+[ "$(pms_value ENTRA_APP_CREATED)" != "true" ] || created_app="$(pms_value ENTRA_APP_CLIENT_ID)"
 if ! skipped entra; then
   if [ -n "$existing_app" ]; then
     az ad app show --id "$existing_app" -o none 2>/dev/null || az ad sp show --id "$existing_app" -o none 2>/dev/null \
@@ -124,6 +131,12 @@ if ! skipped entra; then
     pms_info "Entra: using your existing app registration $existing_app (bring your own; see README)"
   elif [ "$user_type" != "user" ]; then
     pms_fail "A service principal usually cannot create Entra app registrations." "Create one as described in the README and set ENTRA_EXISTING_APP_CLIENT_ID (repository variable for the pipeline)."
+  elif [ -n "$created_app" ] && az ad app show --id "$created_app" -o none 2>/dev/null; then
+    pms_info "Entra: the app registration $created_app of an earlier deployment exists"
+  elif ! skipped entra-probe; then
+    # The probe prints the FAILED line with its fix.
+    graph_token="$(az account get-access-token --resource-type ms-graph --query accessToken -o tsv 2>/dev/null || true)"
+    PMS_GRAPH_TOKEN="$graph_token" "$PY" "$SCRIPT_DIR/lib/entra_app.py" probe --shell sh || exit 1
   else
     can_create="$(lower "$(az rest --method GET --url "https://graph.microsoft.com/v1.0/policies/authorizationPolicy" --query "defaultUserRolePermissions.allowedToCreateApps" -o tsv 2>/dev/null || true)")"
     if [ "$can_create" = "true" ]; then
@@ -136,7 +149,7 @@ if ! skipped entra; then
           allowed=1
         fi
       done
-      [ "$allowed" = "1" ] || pms_fail "You may not create Entra app registrations in this tenant." "Ask an admin to create one (README: bring your own app registration), then run: azd env set ENTRA_EXISTING_APP_CLIENT_ID <client-id>"
+      [ "$allowed" = "1" ] || pms_fail "You may not create Entra app registrations in this tenant." "Bring your own app registration (README): someone who may create one runs bash scripts/create-app-registration.sh --assign-to <you> --owner <you>, then azd env set ENTRA_EXISTING_APP_CLIENT_ID <client-id>"
       pms_info "Entra: your directory role may create app registrations"
     fi
   fi
@@ -152,6 +165,15 @@ esac
 fallback="$(lower "$(pms_value MODEL_FALLBACK_ALL_GENERAL)")"
 resource_group="$(pms_value AZURE_RESOURCE_GROUP)"
 foundry_account="$(pms_value AZURE_FOUNDRY_ACCOUNT_NAME)"
+# A provisioning that stopped early wrote no outputs, but its resource group and model deployments exist.
+# Find them, so that a re-run counts the quota its own deployments already hold (Gate C, cycle 15).
+env_name="$(pms_value AZURE_ENV_NAME)"
+if [ -z "$resource_group" ] && [ -n "$env_name" ] && [ "$(az group exists --name "rg-$env_name" 2>/dev/null || true)" = "true" ]; then
+  resource_group="rg-$env_name"
+fi
+if [ -z "$foundry_account" ] && [ -n "$resource_group" ]; then
+  foundry_account="$(az cognitiveservices account list --resource-group "$resource_group" --query '[0].name' -o tsv 2>/dev/null || true)"
+fi
 
 while IFS=$'\t' read -r role model_name model_version deployment_name; do
   if [ "$role" = "analysis" ] && [ "$fallback" = "true" ]; then

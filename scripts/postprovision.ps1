@@ -6,7 +6,9 @@
 .DESCRIPTION
     1. App registration created by Bicep: pre-authorise Azure CLI for the API scope, so
        'az account get-access-token' works for scripts/seed.ps1 and scripts/smoke-test.ps1.
-    2. Bring-your-own app registration: print the settings it must have.
+    2. Bring-your-own app registration: add the Web redirect URI, ID tokens and the Azure CLI
+       pre-authorisation if you may change it (lib/entra_app.py complete); otherwise print what its
+       owner or an Entra admin has to set.
     3. Assign the signed-in user the app roles in DEPLOYER_APP_ROLES (default PMS.Operator).
 #>
 
@@ -60,12 +62,15 @@ if ($created -eq 'true') {
     }
 }
 else {
-    Write-PmsInfo "Bring-your-own app registration ${clientId}: make sure it has"
-    Write-PmsInfo "  - Web redirect URI: $redirectUri"
-    Write-PmsInfo '  - ID tokens enabled (Authentication > Implicit grant and hybrid flows), single tenant'
-    Write-PmsInfo '  - app roles PMS.Viewer, PMS.Analyst, PMS.Regulatory, PMS.MedicalReviewer, PMS.Operator (allowed member type User)'
-    Write-PmsInfo "  - Expose an API: scope user_impersonation, with Azure CLI ($azureCliAppId) as authorised client"
-    Write-PmsInfo '  - access token version 2 (manifest: requestedAccessTokenVersion = 2)'
+    $completeArgs = @((Join-Path $PSScriptRoot 'lib/entra_app.py'), 'complete', '--shell', 'ps1', '--client-id', $clientId)
+    if ($redirectUri) { $completeArgs += @('--redirect-uri', $redirectUri) }
+    $env:PMS_GRAPH_TOKEN = Invoke-PmsAz account get-access-token --resource-type ms-graph --query accessToken -o tsv
+    try {
+        & $python @completeArgs
+    }
+    finally {
+        Remove-Item Env:PMS_GRAPH_TOKEN -ErrorAction SilentlyContinue
+    }
 }
 
 if ($userType -ne 'user') {

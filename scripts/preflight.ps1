@@ -5,9 +5,9 @@
     Preflight checks before 'azd provision' (also the azd preprovision hook).
 .DESCRIPTION
     Every failed check stops with one plain line: the problem and the fix.
-    Checks: tools, login, region, providers, rbac, entra, models, quota, agents, definitions, email,
-    costapi (warning only), bicep, softdelete. Skip one only if you know why it is a false alarm:
-    $env:PREFLIGHT_SKIP = 'quota,bicep'
+    Checks: tools, login, region, providers, rbac, entra (entra-probe: a test app registration is
+    created and deleted), models, quota, agents, definitions, email, costapi (warning only), bicep,
+    softdelete. Skip one only if you know why it is a false alarm: $env:PREFLIGHT_SKIP = 'quota,bicep'
 .EXAMPLE
     ./scripts/preflight.ps1
 #>
@@ -131,7 +131,14 @@ if (-not (Test-Skipped 'rbac')) {
 }
 
 # --- Entra app registration right (or bring your own) ------------------------------------------
+# The deployment creates the app registration and its enterprise application with your sign-in
+# (Microsoft Graph Bicep extension). The tenant setting "Users can register applications" alone does
+# not prove that right (guest accounts, tenant policies; Gate C, cycle 15), so the check creates a test
+# registration and deletes it again (lib/entra_app.py probe). PREFLIGHT_SKIP=entra-probe checks only the
+# tenant setting and your directory roles.
 $existingApp = Get-PmsValue 'ENTRA_EXISTING_APP_CLIENT_ID'
+$createdApp = ''
+if ((Get-PmsValue 'ENTRA_APP_CREATED') -eq 'true') { $createdApp = Get-PmsValue 'ENTRA_APP_CLIENT_ID' }
 if (-not (Test-Skipped 'entra')) {
     if ($existingApp) {
         $found = (Invoke-PmsAz ad app show --id $existingApp --query appId -o tsv)
@@ -143,6 +150,21 @@ if (-not (Test-Skipped 'entra')) {
     }
     elseif ($userType -ne 'user') {
         Stop-Pms 'A service principal usually cannot create Entra app registrations.' 'Create one as described in the README and set ENTRA_EXISTING_APP_CLIENT_ID (repository variable for the pipeline).'
+    }
+    elseif ($createdApp -and (Invoke-PmsAz ad app show --id $createdApp --query appId -o tsv)) {
+        Write-PmsInfo "Entra: the app registration $createdApp of an earlier deployment exists"
+    }
+    elseif (-not (Test-Skipped 'entra-probe')) {
+        $env:PMS_GRAPH_TOKEN = Invoke-PmsAz account get-access-token --resource-type ms-graph --query accessToken -o tsv
+        try {
+            & $python (Join-Path $PSScriptRoot 'lib/entra_app.py') probe --shell ps1
+            $probeExit = $LASTEXITCODE
+        }
+        finally {
+            Remove-Item Env:PMS_GRAPH_TOKEN -ErrorAction SilentlyContinue
+        }
+        # The probe has printed the FAILED line with its fix.
+        if ($probeExit -ne 0) { exit 1 }
     }
     else {
         $policy = Invoke-PmsAzJson rest --method GET --url 'https://graph.microsoft.com/v1.0/policies/authorizationPolicy'
@@ -161,7 +183,7 @@ if (-not (Test-Skipped 'entra')) {
             }
             $allowed = @($AppCreatorRoles | Where-Object { $templateIds -contains $_ }).Count -gt 0
             if (-not $allowed) {
-                Stop-Pms 'You may not create Entra app registrations in this tenant.' 'Ask an admin to create one (README: bring your own app registration), then run: azd env set ENTRA_EXISTING_APP_CLIENT_ID <client-id>'
+                Stop-Pms 'You may not create Entra app registrations in this tenant.' 'Bring your own app registration (README): someone who may create one runs ./scripts/create-app-registration.ps1 -AssignTo <you> -Owner <you>, then azd env set ENTRA_EXISTING_APP_CLIENT_ID <client-id>'
             }
             Write-PmsInfo 'Entra: your directory role may create app registrations'
         }
@@ -177,6 +199,15 @@ if (@('DataZoneStandard', 'Standard') -cnotcontains $sku) {
 $fallback = (Get-PmsValue 'MODEL_FALLBACK_ALL_GENERAL').ToLowerInvariant() -eq 'true'
 $resourceGroup = Get-PmsValue 'AZURE_RESOURCE_GROUP'
 $foundryAccount = Get-PmsValue 'AZURE_FOUNDRY_ACCOUNT_NAME'
+# A provisioning that stopped early wrote no outputs, but its resource group and model deployments exist.
+# Find them, so that a re-run counts the quota its own deployments already hold (Gate C, cycle 15).
+$envName = Get-PmsValue 'AZURE_ENV_NAME'
+if (-not $resourceGroup -and $envName -and ((Invoke-PmsAz group exists --name "rg-$envName") -eq 'true')) {
+    $resourceGroup = "rg-$envName"
+}
+if (-not $foundryAccount -and $resourceGroup) {
+    $foundryAccount = Invoke-PmsAz cognitiveservices account list --resource-group $resourceGroup --query '[0].name' -o tsv
+}
 $catalog = $null
 $usages = $null
 

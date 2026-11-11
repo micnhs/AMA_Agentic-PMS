@@ -30,6 +30,14 @@ $appClientId = Get-PmsValue 'ENTRA_APP_CLIENT_ID'
 $roleId = Get-PmsValue 'AZURE_ACS_EMAIL_ROLE_ID'
 $vault = Get-PmsValue 'AZURE_KEY_VAULT_NAME'
 $groupName = if ($resourceGroup) { $resourceGroup } else { "rg-$envName" }
+$existingApp = Get-PmsValue 'ENTRA_EXISTING_APP_CLIENT_ID'
+if (-not $roleId -and $subscription) {
+    # A provisioning that stopped early wrote no outputs: find the custom role by its name and scope.
+    $scopeId = "/subscriptions/$subscription/resourceGroups/$groupName"
+    $customRoles = @(Invoke-PmsAzJson role definition list --custom-role-only true --scope "/subscriptions/$subscription")
+    $match = @($customRoles | Where-Object { "$($_.roleName)".StartsWith('PMS demo ACS e-mail sender') -and (@($_.assignableScopes) -contains $scopeId) }) | Select-Object -First 1
+    if ($match) { $roleId = "$($match.name)" }
+}
 
 Write-PmsInfo "This permanently deletes environment '$envName':"
 Write-PmsInfo "  - resource group '$groupName' with all resources and data (azd down --purge)"
@@ -49,8 +57,9 @@ if ($confirmation -cne $envName) {
 
 & azd down --purge --force
 $downStatus = $LASTEXITCODE
-if ($resourceGroup -and ((Invoke-PmsAz group exists --name $resourceGroup) -ne 'false')) {
-    Stop-Pms "Resource group $resourceGroup still exists (azd down exit code $downStatus)." 'Check the error above and re-run ./scripts/teardown.ps1'
+# Also checked when AZURE_RESOURCE_GROUP is unknown (a provisioning that stopped early wrote no outputs).
+if ((Invoke-PmsAz group exists --name $groupName) -ne 'false') {
+    Stop-Pms "Resource group $groupName still exists (azd down exit code $downStatus)." "Check the error above and re-run ./scripts/teardown.ps1, or delete it: az group delete --name $groupName --yes"
 }
 if ($downStatus -ne 0) {
     Write-PmsWarn "azd down reported exit code $downStatus, but the resource group is gone (a purge step may have been refused)."
@@ -81,6 +90,9 @@ if ($appCreated -eq 'true' -and $appClientId) {
     }
 }
 
+if ($existingApp) {
+    Write-PmsInfo "The bring-your-own app registration $existingApp stays. If scripts/create-app-registration created it for this demo, delete it: az ad app delete --id $existingApp"
+}
 if ($vault) {
     Write-PmsInfo "Note: Key Vault $vault has purge protection and stays soft-deleted for 7 days; redeploy within that time with a new environment name."
 }

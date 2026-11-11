@@ -49,7 +49,26 @@ pms_info "Environment: $current_env"
 bash "$SCRIPT_DIR/preflight.sh"
 
 export PREFLIGHT_DONE=1
-azd up "$@"
+status=0
+azd up "$@" || status=$?
+if [ "$status" -ne 0 ]; then
+  # A refused Entra app registration surfaces only at the end of the provisioning (Microsoft Graph
+  # error, no fix in the azd output). Name it and the way out; the resources before it stay in place.
+  if [ -z "$(pms_value ENTRA_EXISTING_APP_CLIENT_ID)" ]; then
+    resource_group="$(pms_value AZURE_RESOURCE_GROUP)"
+    resource_group="${resource_group:-rg-$current_env}"
+    entra_state="$(az deployment group show --resource-group "$resource_group" --name pms-entra-app --query properties.provisioningState -o tsv 2>/dev/null || true)"
+    if [ "$entra_state" = "Failed" ]; then
+      { az deployment operation group list --resource-group "$resource_group" --name pms-entra-app \
+          --query "[?properties.provisioningState=='Failed'].[properties.targetResource.resourceType, properties.statusMessage.error.message]" \
+          -o tsv 2>/dev/null || true; } | while IFS=$'\t' read -r resource_type message; do
+        pms_warn "Entra step failed at $resource_type: $message"
+      done
+      pms_fail "The deployment could not create the Entra app registration with your account (Microsoft Graph refused it); the Azure resources before this step are in place." "Bring your own app registration (README): bash scripts/create-app-registration.sh - run by you if bash scripts/preflight.sh says you may create app registrations, otherwise by someone who may, with --assign-to <you> --owner <you> - then run bash scripts/deploy.sh -e $current_env again; it continues in resource group $resource_group."
+    fi
+  fi
+  exit "$status"
+fi
 
 pms_info "Deployed. Web app: $(pms_value WEB_URL)"
 pms_info "Next: assign app roles to demo users (README), then bash scripts/seed.sh --azure and bash scripts/smoke-test.sh --part 1"

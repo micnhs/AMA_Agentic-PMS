@@ -32,9 +32,18 @@ app_created="$(pms_value ENTRA_APP_CREATED)"
 app_client_id="$(pms_value ENTRA_APP_CLIENT_ID)"
 role_id="$(pms_value AZURE_ACS_EMAIL_ROLE_ID)"
 vault="$(pms_value AZURE_KEY_VAULT_NAME)"
+existing_app="$(pms_value ENTRA_EXISTING_APP_CLIENT_ID)"
+group_name="${resource_group:-rg-$env_name}"
+if [ -z "$role_id" ] && [ -n "$subscription" ]; then
+  # A provisioning that stopped early wrote no outputs: find the custom role by its name and scope.
+  role_id="$(az role definition list --custom-role-only true --scope "/subscriptions/$subscription" \
+    --query "[?starts_with(roleName, 'PMS demo ACS e-mail sender') && contains(assignableScopes, '/subscriptions/$subscription/resourceGroups/$group_name')].name | [0]" \
+    -o tsv 2>/dev/null || true)"
+  [ "$role_id" != "None" ] || role_id=""
+fi
 
 pms_info "This permanently deletes environment '$env_name':"
-pms_info "  - resource group '${resource_group:-rg-$env_name}' with all resources and data (azd down --purge)"
+pms_info "  - resource group '$group_name' with all resources and data (azd down --purge)"
 [ -z "$role_id" ] || pms_info "  - the custom role 'PMS demo ACS e-mail sender' ($role_id)"
 if [ "$app_created" = "true" ] && [ -n "$app_client_id" ]; then
   pms_info "  - the Entra app registration $app_client_id created by this deployment"
@@ -49,8 +58,9 @@ fi
 
 down_status=0
 azd down --purge --force || down_status=$?
-if [ -n "$resource_group" ] && [ "$(az group exists --name "$resource_group" 2>/dev/null || echo true)" = "true" ]; then
-  pms_fail "Resource group $resource_group still exists (azd down exit code $down_status)." "Check the error above and re-run bash scripts/teardown.sh"
+# Also checked when AZURE_RESOURCE_GROUP is unknown (a provisioning that stopped early wrote no outputs).
+if [ "$(az group exists --name "$group_name" 2>/dev/null || echo true)" = "true" ]; then
+  pms_fail "Resource group $group_name still exists (azd down exit code $down_status)." "Check the error above and re-run bash scripts/teardown.sh, or delete it: az group delete --name $group_name --yes"
 fi
 [ "$down_status" = "0" ] || pms_warn "azd down reported exit code $down_status, but the resource group is gone (a purge step may have been refused)."
 
@@ -73,6 +83,9 @@ if [ "$app_created" = "true" ] && [ -n "$app_client_id" ]; then
   fi
 fi
 
+if [ -n "$existing_app" ]; then
+  pms_info "The bring-your-own app registration $existing_app stays. If scripts/create-app-registration created it for this demo, delete it: az ad app delete --id $existing_app"
+fi
 if [ -n "$vault" ]; then
   pms_info "Note: Key Vault $vault has purge protection and stays soft-deleted for 7 days; redeploy within that time with a new environment name."
 fi

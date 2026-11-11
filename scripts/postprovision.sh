@@ -2,7 +2,9 @@
 # azd postprovision hook. Best effort: it never fails the deployment and prints the fix instead.
 #   1. App registration created by Bicep: pre-authorise Azure CLI for the API scope, so
 #      'az account get-access-token' works for scripts/seed.sh and scripts/smoke-test.sh.
-#   2. Bring-your-own app registration: print the settings it must have.
+#   2. Bring-your-own app registration: add the Web redirect URI, ID tokens and the Azure CLI
+#      pre-authorisation if you may change it (lib/entra_app.py complete); otherwise print what its
+#      owner or an Entra admin has to set.
 #   3. Assign the signed-in user the app roles in DEPLOYER_APP_ROLES (default PMS.Operator).
 set -euo pipefail
 
@@ -40,12 +42,10 @@ if [ "$created" = "true" ]; then
     fi
   fi
 else
-  pms_info "Bring-your-own app registration $client_id: make sure it has"
-  pms_info "  - Web redirect URI: $redirect_uri"
-  pms_info "  - ID tokens enabled (Authentication > Implicit grant and hybrid flows), single tenant"
-  pms_info "  - app roles PMS.Viewer, PMS.Analyst, PMS.Regulatory, PMS.MedicalReviewer, PMS.Operator (allowed member type User)"
-  pms_info "  - Expose an API: scope user_impersonation, with Azure CLI (04b07795-8ddb-461a-bbee-02f9e1bf7b46) as authorised client"
-  pms_info "  - access token version 2 (manifest: requestedAccessTokenVersion = 2)"
+  complete_args=(complete --shell sh --client-id "$client_id")
+  [ -z "$redirect_uri" ] || complete_args+=(--redirect-uri "$redirect_uri")
+  graph_token="$(az account get-access-token --resource-type ms-graph --query accessToken -o tsv 2>/dev/null || true)"
+  PMS_GRAPH_TOKEN="$graph_token" "$PY" "$SCRIPT_DIR/lib/entra_app.py" "${complete_args[@]}" || true
 fi
 
 if [ "$user_type" != "user" ]; then

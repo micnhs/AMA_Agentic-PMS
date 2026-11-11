@@ -36,8 +36,11 @@ The sandbox that built this repository has no browser, so the Gate B screenshots
 ## Before you start
 
 - [ ] An Azure subscription where you are **Owner** (or **Contributor plus User Access Administrator**).
-- [ ] You may create Microsoft Entra app registrations, **or** an admin gives you the client ID of a
-      prepared registration (README: *Bring your own app registration*).
+- [ ] You may create Microsoft Entra app registrations with your account in the subscription's tenant
+      (the preflight proves it with a test registration that it deletes again), **or** someone who may
+      creates the registration with `scripts/create-app-registration.*` and gives you the client ID
+      (README: *Bring your own app registration*). Guest accounts usually may not create app
+      registrations.
 - [ ] Model quota for `gpt-6-astra` and `gpt-6.1-sol` as **Data Zone Standard** in the chosen EU region
       (default Sweden Central, 50 thousand tokens per minute each). The preflight checks it.
 - [ ] Tools: Azure CLI 2.67 or newer, Azure Developer CLI 1.18 or newer, Python 3.12 or newer, bash
@@ -89,6 +92,10 @@ PowerShell:
       the warning in `notes.md`.
 - [ ] If a step fails, do not work around it silently: copy the `FAILED: ... Fix: ...` line into
       `notes.md`, apply the fix it names, and run the step again (append with `tee -a deploy.log`).
+- [ ] If the deployment stops at the Entra app registration (`FAILED: The deployment could not create the
+      Entra app registration ...`, Microsoft Graph `Authorization_RequestDenied`): bring your own app
+      registration as the README describes and run the deploy command again; it continues in the same
+      resource group. Note in `notes.md` who created the registration and how.
       If piping through `tee` causes trouble, run the command without it and paste the console output
       into `deploy.log` afterwards.
 

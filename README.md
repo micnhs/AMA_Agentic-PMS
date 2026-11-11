@@ -154,7 +154,7 @@ Details: [docs/architecture.md](docs/architecture.md) and the decision records
 |---|---|---|
 | Software | **Python 3.12 or newer** and bash, or PowerShell 7.2 or newer (`pwsh`). No Python packages to install. | Azure CLI 2.67 or newer, Azure Developer CLI 1.18 or newer, Python 3.12 or newer, bash or PowerShell 7.2 or newer (`pwsh`). No local Docker: images are built in Azure Container Registry. |
 | Azure roles | – | **Owner**, or **Contributor plus User Access Administrator**, on the subscription. The template creates the resource group, role assignments, a custom role, a policy assignment and a budget. |
-| Microsoft Entra rights | – | The right to create app registrations (tenant setting "Users can register applications", or a role such as Application Developer, Cloud Application Administrator or Application Administrator) – **or** an app registration prepared by an admin ([bring your own](#bring-your-own-app-registration)). |
+| Microsoft Entra rights | – | The right to create app registrations and their enterprise applications with your account (tenant setting "Users can register applications" for member accounts, or a role such as Application Developer, Cloud Application Administrator or Application Administrator; guest accounts and some tenant policies do not allow it – the preflight tests it) – **or** a registration created outside the deployment ([bring your own](#bring-your-own-app-registration)). |
 | Region | – | One EU region. Default **Sweden Central** (`swedencentral`); fallback Germany West Central (`germanywestcentral`). |
 | Model quota | – | `gpt-6-astra` (version 2026-09-03) and `gpt-6.1-sol` (version 2026-09-29) as **Data Zone Standard** in the region, 50 thousand tokens per minute each by default. Never Global Standard. |
 | Other | – | 15 resource providers registered (the preflight names any missing one); an e-mail address for budget and operations alerts (`DEPLOYER_EMAIL`). |
@@ -311,11 +311,12 @@ PowerShell: `./scripts/preflight.ps1`
 
 The preflight checks tool versions; az and azd sign-in and the subscription; the region (EU allow-list
 and available to you); 15 resource providers; your Azure roles; your right to create app registrations
-(or your own registration); each model, version and Data Zone Standard offer in the region; free quota;
-Foundry projects (Agent Service) in the region; the built-in role and policy definitions; the e-mail
-addresses; the Cost Management API (warning only); that `infra/main.bicep` compiles; and names still
-blocked by soft-deleted resources of an earlier deployment. A failed check stops with one line:
-`FAILED: <problem> Fix: <command>`.
+(it creates a test registration `pms-preflight-probe-…` with its enterprise application and deletes both
+right away; `PREFLIGHT_SKIP=entra-probe` checks only the tenant setting) or your own registration; each
+model, version and Data Zone Standard offer in the region; free quota; Foundry projects (Agent Service)
+in the region; the built-in role and policy definitions; the e-mail addresses; the Cost Management API
+(warning only); that `infra/main.bicep` compiles; and names still blocked by soft-deleted resources of an
+earlier deployment. A failed check stops with one line: `FAILED: <problem> Fix: <command>`.
 
 ### Step 4 – Deploy
 
@@ -336,7 +337,8 @@ What happens:
 2. **Provision** (Bicep): the resource group, all resources, the Entra app registration (unless you bring
    your own) and the two container apps, at first with a public placeholder image.
 3. **Postprovision hook:** pre-authorises the Azure CLI for the app's API (so the scripts can get a
-   token) and assigns your app roles from `DEPLOYER_APP_ROLES`.
+   token) and assigns your app roles from `DEPLOYER_APP_ROLES`. With your own registration it also adds
+   the Web redirect URI if you may change the registration.
 4. **Deploy:** builds the image in Azure Container Registry and deploys the web app and the alert worker.
 5. **Postdeploy hook:** waits until `/healthz` answers and prints the next steps. If the Azure Python
    packages are installed on your machine (`pip install -r requirements.txt`), it also builds the Azure AI
@@ -394,7 +396,40 @@ Provisioning takes a while; the model deployments and the first image build are 
 
 ### Bring your own app registration
 
-If you may not create app registrations, the preflight says so. Ask an Entra admin to create one:
+Use a registration created outside the deployment when the preflight says that you may not create app
+registrations, or when the deployment stops with
+`FAILED: The deployment could not create the Entra app registration with your account ...`.
+
+1. Someone who may create app registrations in the tenant runs, in the repository folder:
+
+   ```bash
+   bash scripts/create-app-registration.sh -e pms-demo --assign-to <deployer UPN> --owner <deployer UPN>
+   ```
+
+   PowerShell: `./scripts/create-app-registration.ps1 -EnvironmentName pms-demo -AssignTo <deployer UPN> -Owner <deployer UPN>`.
+   That can be you (if `bash scripts/preflight.sh` says you may create app registrations; then the options
+   are not needed) or an Entra admin. The script creates the registration with the settings of
+   `infra/modules/entra-app.bicep`: single tenant; the app roles `PMS.Viewer`, `PMS.Analyst`,
+   `PMS.Regulatory`, `PMS.MedicalReviewer` and `PMS.Operator`; Application ID URI `api://<client-id>` with
+   the scope `user_impersonation` and Azure CLI as authorized client; ID tokens; access tokens v2; the
+   enterprise application with *assignment required*. It assigns the app roles of `DEPLOYER_APP_ROLES`
+   (default `PMS.Operator`; `--roles` / `-Roles` to choose) and prints the client ID. In the selected azd
+   environment it stores the client ID itself, and running it again completes the same registration.
+2. If someone else ran it, set the client ID in your azd environment:
+
+   ```bash
+   azd env set ENTRA_EXISTING_APP_CLIENT_ID <client-id>
+   ```
+
+3. Deploy (again) as in [step 4](#step-4--deploy). After a stopped attempt the resource group and its
+   resources are still there; the deployment continues in it.
+
+After provisioning, the postprovision hook adds the Web redirect URI (`azd env get-value WEB_REDIRECT_URI`,
+of the form `https://<web-app>/.auth/login/aad/callback`) and the Azure CLI pre-authorisation to the
+registration if you may change it (you own it, for example with `--owner`); otherwise it prints what the
+owner or an admin must add.
+
+Manual alternative in the Microsoft Entra admin center (the same settings):
 
 1. App registration, single tenant (accounts in this organizational directory only).
 2. App roles with the values `PMS.Viewer`, `PMS.Analyst`, `PMS.Regulatory`, `PMS.MedicalReviewer` and
@@ -404,18 +439,11 @@ If you may not create app registrations, the preflight says so. Ask an Entra adm
 4. Authentication: ID tokens enabled; access token version 2 (manifest `requestedAccessTokenVersion: 2`).
 5. Recommended: Enterprise applications > the app > Properties > *Assignment required* = Yes.
 
-Then, before you deploy:
-
-```bash
-azd env set ENTRA_EXISTING_APP_CLIENT_ID <client-id>
-```
-
 Only if the Application ID URI is not `api://<client-id>`:
 `azd env set ENTRA_EXISTING_APP_IDENTIFIER_URI <uri>`.
 
-After provisioning, the postprovision hook prints the redirect URI (`azd env get-value WEB_REDIRECT_URI`,
-of the form `https://<web-app>/.auth/login/aad/callback`). The admin adds it as a Web redirect URI of the
-registration. Teardown never deletes a registration you brought yourself.
+Teardown never deletes a registration you brought yourself. Delete it when the demo is gone:
+`az ad app delete --id <client-id>`.
 
 ### Model quota and fallback
 
@@ -483,7 +511,7 @@ Set with `azd env set <NAME> <value>`, then run `azd provision` (or `azd up`) ag
 | `AZURE_STORAGE_SKU` | `Standard_LRS` | `Standard_ZRS` = zone-redundant storage |
 | `LOG_RETENTION_DAYS`, `LOG_DAILY_CAP_GB` | `30`, `1` | Log retention and daily ingestion cap |
 | `AUTO_SEED` | off | `true` = the postdeploy hook loads the demo data |
-| `PREFLIGHT_SKIP` | empty | Comma-separated preflight checks to skip, only for a known false alarm |
+| `PREFLIGHT_SKIP` | empty | Comma-separated preflight checks to skip, only for a known false alarm (`entra-probe`: no test app registration, tenant setting only) |
 
 These are inputs of the templates. The environment variables of the running app (endpoints, model
 deployments, `PUBLIC_BASE_URL` and others) are listed in
@@ -641,7 +669,7 @@ The script:
    soft-deleted resources where Azure allows it;
 2. deletes the custom role *PMS demo ACS e-mail sender* at subscription level;
 3. deletes the Entra app registration that the deployment created (also from the Entra recycle bin where
-   allowed). It never deletes a registration you brought yourself.
+   allowed). It never deletes a registration you brought yourself; it prints the command for that.
 
 **Key Vault purge protection:** the Key Vault cannot be purged. It stays soft-deleted for 7 days and its
 name stays reserved; a warning about a refused purge step is expected. To deploy again within these
@@ -678,7 +706,8 @@ Every failed preflight check prints one line `FAILED: <problem> Fix: <command>`.
 | `AZURE_LOCATION is not set.` / `Region ... is not an allowed EU region` / `not available to subscription` | `azd env set AZURE_LOCATION swedencentral` (fallback `germanywestcentral`). |
 | `Resource provider ... is not registered` | `az provider register --namespace <namespace> --wait` |
 | `Your identity needs Owner (or Contributor plus User Access Administrator) ...` | Ask a subscription owner for the role, then run the preflight again. |
-| `You may not create Entra app registrations in this tenant.` / `A service principal usually cannot create Entra app registrations.` | [Bring your own app registration](#bring-your-own-app-registration). |
+| `Microsoft Graph does not let <you> create an app registration ...` / `You may not create Entra app registrations in this tenant.` / `A service principal usually cannot create Entra app registrations.` | [Bring your own app registration](#bring-your-own-app-registration). As a guest in the subscription's tenant, you can also sign in with a member account of that tenant (`az login --tenant <id>`, `azd auth login --tenant-id <id>`). |
+| The deployment stops with `Forbidden: Authorization_RequestDenied: Insufficient privileges to complete the operation. Graph request-id: ...` (deploy prints `FAILED: The deployment could not create the Entra app registration ...`) | Microsoft Graph refused the app registration for your account although the resources before it were created. [Bring your own app registration](#bring-your-own-app-registration), then run the deploy command again; it continues in the same resource group. To start over instead, run the [teardown](#teardown) first. |
 | `Model ... is not offered as DataZoneStandard in ...` | `azd env set MODEL_FALLBACK_ALL_GENERAL true`, or another EU region. Never Global Standard. |
 | `Only ... of DataZoneStandard quota is free ...` / `No DataZoneStandard quota ...` | Lower `MODEL_ANALYSIS_CAPACITY` / `MODEL_GENERAL_CAPACITY`, or request quota in the Foundry portal (Operate > Quota). |
 | `Foundry projects (Agent Service) are not offered in ...` | `azd env set AZURE_LOCATION swedencentral` |
@@ -830,7 +859,7 @@ python3 scripts/secret_scan.py
 python3 scripts/validate_workflows.py --no-pyyaml
 ```
 
-About 340 tests (unit, golden, authorization, UI and safety); the Azure adapters are tested against fake
+About 370 tests (unit, golden, authorization, UI and safety); the Azure adapters are tested against fake
 SDKs, so nothing needs Azure. The browser tests in `tests/ui/playwright/` are skipped when Playwright is
 not installed.
 
@@ -862,8 +891,9 @@ src/pms/             Python package: rules/, agents/, web/, azure/ (Cosmos DB, B
 config/              dated price table (pricing.json)
 data/synthetic/      frozen golden set v1.0: letters, dossiers, registry, seeds, knowledge corpus,
                      monthly counts, expected.json
-scripts/             preflight, run-local, seed, deploy, smoke-test, verify-audit, teardown (bash and
-                     PowerShell), postprovision and postdeploy hooks, secret_scan.py, validate_workflows.py
+scripts/             preflight, run-local, seed, deploy, smoke-test, verify-audit, teardown,
+                     create-app-registration (bash and PowerShell), postprovision and postdeploy hooks,
+                     secret_scan.py, validate_workflows.py
 tests/               unit, golden, authorization, UI and safety tests
 docs/                architecture, decision records, rule sources, handover checklist
 ```

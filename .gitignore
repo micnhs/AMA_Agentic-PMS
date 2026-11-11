@@ -7,8 +7,12 @@ __pycache__/
 *.pyc
 .venv/
 
-# Azure smoke-test output (Gate C evidence is copied out deliberately)
+# Azure smoke-test output and the other Gate C hand-over files (copied out deliberately; never commit)
 smoke-test-result.json
+/smoke-test-result-part1.json
+/deploy.log
+/notes.md
+/screenshot-*.png
 
 # Azure Developer CLI environments (hold deployment outputs; never commit)
 .azure/

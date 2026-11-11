@@ -21,9 +21,10 @@ function Write-PmsWarn([string]$Message) {
     Write-Host "[pms] WARNING: $Message" -ForegroundColor Yellow
 }
 
-# Stops with one plain line: what is wrong and how to fix it.
+# Stops with one plain line: what is wrong and how to fix it. Write-Host (information stream), so that
+# '*>&1 | Tee-Object -FilePath deploy.log' records the line too (Gate C, cycle 15).
 function Stop-Pms([string]$Problem, [string]$Fix) {
-    [Console]::Error.WriteLine("[pms] FAILED: $Problem Fix: $Fix")
+    Write-Host "[pms] FAILED: $Problem Fix: $Fix" -ForegroundColor Red
     exit 1
 }
 
