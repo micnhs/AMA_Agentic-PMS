@@ -47,7 +47,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install the Azure Developer CLI
-        uses: Azure/setup-azd@v2.0.0
+        uses: Azure/setup-azd@v2.4.0
       - name: Azure CLI sign-in (OIDC, no stored secrets)
         uses: azure/login@v2.2.0
         with:
