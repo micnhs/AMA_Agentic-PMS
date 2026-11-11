@@ -2,6 +2,8 @@
 # Versions are pinned in .github/workflows/ci.yml (PSRule 2.9.0, PSRule.Rules.Azure 1.39.0).
 # Deliberate deviations of the demo baseline are suppressed only in .ps-rule/*.Rule.yaml, each with
 # a written reason (Synopsis) that matches the README limits and OI-037. Nothing is excluded here.
+# Run with '-Path ./.ps-rule/': when -Module is given, Assert-PSRule does not read the working
+# directory, so without -Path the suppression groups are silently ignored (CI run #12, 11 Nov 2026).
 
 requires:
   PSRule: ">=2.9.0"
@@ -22,6 +24,11 @@ configuration:
   AZURE_BICEP_FILE_EXPANSION_TIMEOUT: 60
   AZURE_BICEP_CHECK_TOOL: true
   AZURE_BICEP_MINIMUM_VERSION: "0.30.0"
+  # resourceToken is the uniqueString() suffix of the resource names, not a secret.
+  # Azure.Deployment.SecureParameter treats every string parameter whose name contains "token" as
+  # sensitive; this documented setting marks this one name as not sensitive.
+  AZURE_DEPLOYMENT_NONSENSITIVE_PARAMETER_NAMES:
+    - resourceToken
   # One EU region for all resources (concept 3.4).
   AZURE_RESOURCE_ALLOWED_LOCATIONS:
     - swedencentral

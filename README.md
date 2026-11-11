@@ -645,6 +645,9 @@ The script:
 name stays reserved; a warning about a refused purge step is expected. To deploy again within these
 7 days, use a new environment name (`azd env new <new name> ...`).
 
+**Cosmos DB continuous backup:** a deleted Cosmos DB account stays restorable from its continuous backup
+within the 7-day window (synthetic data only; the 7-day tier has no charge for backup storage).
+
 The local azd environment values stay in `.azure/<environment name>/` (ignored by git); delete that
 folder if you no longer need it.
 
@@ -721,7 +724,7 @@ of conformity.
 
 | Pillar | In the demo |
 |---|---|
-| Reliability | Alert worker always on with health probes; retries with backoff for model and search calls; idempotent processing per signal; restart without lost deadlines; infrastructure as code |
+| Reliability | Alert worker always on with health probes; retries with backoff for model and search calls; idempotent processing per signal; restart without lost deadlines; Cosmos DB continuous backup (7-day tier, point-in-time restore into a new account; no charge for its backup storage, a restore is charged); infrastructure as code |
 | Security | Entra-only sign-in with app roles; managed identities instead of keys; local authentication off where possible; Key Vault with RBAC, soft delete and purge protection; HTTPS only; least privilege; Prompt Shields; secret scan; OIDC deployment without stored secrets |
 | Cost optimization | Serverless and Basic tiers; budget with alerts; costs per case; forecast; cost tags; teardown script |
 | Operational excellence | Bicep and azd; CI with lint, tests, Bicep build and a PSRule for Azure check; preflight and smoke test; diagnostics to Log Analytics; workbook and alert rules; versions in every audit record |
@@ -823,8 +826,12 @@ GitHub Actions (`.github/workflows/ci.yml`; no Azure sign-in, no secrets):
 | Tests | Unit, golden, authorization, safety and UI DOM tests; golden run with 100 % required | `golden-summary` |
 | UI (Playwright) | Starts the offline demo and runs the browser tests with screenshots | `ui-screenshots` |
 | Bicep | `az bicep build` of `infra/main.bicep` | `arm-templates` |
-| Well-Architected check | PSRule for Azure with written suppressions | `psrule-report` |
+| Well-Architected check | PSRule for Azure with written suppressions (`.ps-rule/`, loaded with `-Path`) | `psrule-report` |
 | Hygiene | Secret scan and workflow validation | – |
+
+If a job fails, open the run: the summary page shows the annotations (GitHub shows only the first ten
+per step) and, for the Well-Architected check, a table with every finding. The full logs of a run: open a
+job, then the gear icon at the top right of the log, *Download log archive*.
 
 `.github/workflows/deploy.yml` deploys only when started by hand ([OIDC setup](#deploy-from-github-actions-oidc)).
 

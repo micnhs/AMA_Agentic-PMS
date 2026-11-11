@@ -662,7 +662,7 @@ conformity.
 
 | Pillar | Implemented | Deviation and option | Check |
 |---|---|---|---|
-| Reliability | Alert worker with at least one replica and health probes; retry with backoff for model and search calls; idempotent processing per signal; resume after a failure without lost deadlines; infrastructure as code with azd | No zone redundancy, no second region; option: zone-redundant environment and Cosmos DB | T25, T29, smoke test |
+| Reliability | Alert worker with at least one replica and health probes; retry with backoff for model and search calls; idempotent processing per signal; resume after a failure without lost deadlines; Cosmos DB continuous backup (7-day tier, no charge for backup storage); infrastructure as code with azd | No zone redundancy, no second region; option: zone-redundant environment and Cosmos DB | T25, T29, smoke test |
 | Security | Entra-only sign-in with app roles; managed identities instead of keys; local authentication off where possible; Key Vault with RBAC, soft delete and purge protection; HTTPS only; least privilege; Prompt Shields; secret scan; OIDC deployment without stored secrets | Public endpoints protected by Entra ID instead of private networking; no Defender plans; option: VNet integration with private endpoints | T05, T11, T31, T32 |
 | Cost optimization | Serverless and Basic tiers; budget with alerts; costs per case; forecast; cost tags; teardown script | Azure AI Search Basic is the largest fixed cost; tier is a parameter | T27, T28 |
 | Operational excellence | Everything as code; CI with lint, tests, Bicep build and PSRule check; preflight and smoke test; diagnostics to Log Analytics; workbook and alert rules; versions in every audit record | No staging environment | T09, T10, T29, T31 |

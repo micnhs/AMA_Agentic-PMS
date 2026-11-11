@@ -186,7 +186,23 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path artifacts | Out-Null
-          Assert-PSRule -Option ./ps-rule.yaml -InputPath ./infra/tests/ -Module PSRule.Rules.Azure -Format File -OutputFormat Sarif -OutputPath artifacts/ps-rule.sarif
+          # -Path loads the suppression groups; with -Module alone the working directory is not read.
+          Assert-PSRule -Option ./ps-rule.yaml -Path ./.ps-rule/ -InputPath ./infra/tests/ -Module PSRule.Rules.Azure -Format File -OutputFormat Sarif -OutputPath artifacts/ps-rule.sarif
+      - name: List every PSRule finding on the run summary page (the annotations show only the first 10)
+        if: failure()
+        shell: pwsh
+        run: |
+          $results = @(Invoke-PSRule -Option ./ps-rule.yaml -Path ./.ps-rule/ -InputPath ./infra/tests/ -Module PSRule.Rules.Azure -Format File -Outcome Fail, Error -WarningAction SilentlyContinue)
+          $lines = [System.Collections.Generic.List[string]]::new()
+          $lines.Add("### PSRule for Azure: $($results.Count) failed or errored results (complete list)")
+          $lines.Add('')
+          $lines.Add('| Rule | Target | Type | Reason |')
+          $lines.Add('| --- | --- | --- | --- |')
+          foreach ($result in $results) {
+            $reason = ((@($result.Reason) -join '; ') -replace '\|', '/') -replace '\r?\n', ' '
+            $lines.Add("| $($result.RuleName) | $($result.TargetName) | $($result.TargetType) | $reason |")
+          }
+          $lines | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
       - name: Upload the PSRule report
         if: always()
         uses: actions/upload-artifact@v4.4.3

@@ -56,6 +56,15 @@ resource account 'Microsoft.DocumentDB/databaseAccounts@2024-11-15' = {
     enableAutomaticFailover: false
     enableMultipleWriteLocations: false
     enableFreeTier: false
+    // Continuous backup, 7-day tier: point-in-time restore into a new account in the same region.
+    // Microsoft Learn (checked 11 Nov 2026): the 7-day tier has no charge for backup storage; a
+    // restore is charged. Free recommendations are on by default (ADR-011, option B).
+    backupPolicy: {
+      type: 'Continuous'
+      continuousModeProperties: {
+        tier: 'Continuous7Days'
+      }
+    }
   }
 }
 

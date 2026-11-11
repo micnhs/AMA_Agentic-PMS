@@ -27,6 +27,10 @@ The sandbox that built this repository has no browser, so the Gate B screenshots
 - [ ] Wait for the workflow *CI* to finish. Download the artifact `ui-screenshots` and, if present,
       `golden-summary`, `arm-templates` and `psrule-report` (they also answer OI-039 and OI-040).
 - [ ] Note the workflow result per job (passed/failed) and copy any failure message into `notes.md`.
+      Where to find it: the run summary page shows the annotations and, for the Well-Architected check, a
+      table with every finding (a screenshot of that page is enough). Full logs: open a job, then the gear
+      icon at the top right of the log, *Download log archive* (there is no such entry in the "..." menu
+      of the run page).
 - [ ] Put the artifacts into `input/handover/<YYYY-MM-DD>/ci/` (see section 8).
 
 ## Before you start

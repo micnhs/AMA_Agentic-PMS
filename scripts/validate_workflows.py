@@ -6,7 +6,8 @@ Checks .github/workflows/*.yml:
   - every action pinned to a full version tag (vX.Y.Z) or a commit SHA; no pull_request_target
   - no stored secrets: '${{ secrets.* }}' is refused (only GITHUB_TOKEN is tolerated)
   - azure/login only with OIDC ids from repository variables (vars.*), id-token: write, manual trigger
-  - ci.yml runs lint, tests, Playwright, Bicep build, PSRule and the secret scan
+  - ci.yml runs lint, tests, Playwright, Bicep build, PSRule and the secret scan; every PSRule call with
+    -Module also passes -Path ./.ps-rule/ (otherwise the suppression groups are ignored)
 Checks azure.yaml: services web and worker on Container Apps from the repo Dockerfile, preflight as
 preprovision hook (posix and windows), referenced scripts exist. Also parses the JSON files in infra/.
 
@@ -25,6 +26,8 @@ from pathlib import Path
 PINNED_ACTION = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_./-]+@(?:v\d+\.\d+\.\d+|[0-9a-f]{40})$")
 SECRET_REFERENCE = re.compile(r"\$\{\{[^}]*\bsecrets\.([A-Za-z_][A-Za-z0-9_]*)")
 VARS_EXPRESSION = re.compile(r"^\$\{\{\s*vars\.[A-Z][A-Z0-9_]*\s*\}\}$")
+PSRULE_COMMAND = re.compile(r"\b(?:Assert|Invoke)-PSRule\b")
+PSRULE_PATH = re.compile(r"\s-Path\s+(?:\./)?\.ps-rule/?(?=\s|$)")
 REQUIRED_CI_STEPS = {
     "ruff lint": re.compile(r"\bruff check\b"),
     "unit/golden/authz/safety/ui tests": re.compile(r"unittest discover"),
@@ -360,6 +363,13 @@ def check_workflow(path: Path, data, errors: list[str], warnings: list[str]) -> 
         for label, pattern in REQUIRED_CI_STEPS.items():
             if not pattern.search(run_text):
                 errors.append(f"{name}: no step runs the {label}")
+        # With -Module, PSRule does not read the working directory: without -Path the suppression
+        # groups in .ps-rule/ are silently ignored (CI run #12, 11 Nov 2026).
+        for line in run_text.splitlines():
+            command = PSRULE_COMMAND.search(line)
+            if command and "-Module" in line and not PSRULE_PATH.search(line):
+                errors.append(f"{name}: {command.group(0)} with -Module must also pass -Path ./.ps-rule/ "
+                              "(otherwise the suppression groups are not loaded)")
     if name == "deploy.yml":
         if trigger_names != {"workflow_dispatch"}:
             errors.append(f"{name}: must be triggered by workflow_dispatch only")
