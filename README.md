@@ -730,9 +730,10 @@ of conformity.
 | Operational excellence | Bicep and azd; CI with lint, tests, Bicep build and a PSRule for Azure check; preflight and smoke test; diagnostics to Log Analytics; workbook and alert rules; versions in every audit record |
 | Performance efficiency | Container Apps scale with load; limits on tool calls, rounds and run time; the alert latency is measured |
 
-PSRule for Azure checks `infra/` in CI with pinned versions; every suppressed rule has a written reason
-in `.ps-rule/waf-deviations.Rule.yaml`. After deploying you can also use the Well-Architected Review and
-Azure Advisor; they are not part of the automated checks. The deviations are listed in the next section.
+PSRule for Azure checks `infra/` in CI with pinned versions. The rules that the demo deliberately does
+not meet are excluded in `ps-rule.yaml` (`rule.exclude`), each group with its written reason, and are
+listed in the next section; PSRule does not evaluate excluded rules. After deploying you can also use the
+Well-Architected Review and Azure Advisor; they are not part of the automated checks.
 
 ## Limits and deviations
 
@@ -740,12 +741,18 @@ Azure Advisor; they are not part of the automated checks. The deviations are lis
 extra cost need the project owner's approval, OI-037):
 
 - No zone redundancy and no second region. Option: zone-redundant environment and Cosmos DB;
-  `AZURE_STORAGE_SKU=Standard_ZRS` is the one low-cost option offered as a parameter.
-- No private networking: public endpoints protected by Entra ID and managed identities. Option: VNet
-  integration with private endpoints.
+  `AZURE_STORAGE_SKU=Standard_ZRS` is the one low-cost option offered as a parameter. PSRule rules
+  excluded: `Azure.ContainerApp.AvailabilityZone`, `Azure.Storage.UseReplication`.
+- No private networking: public endpoints protected by Entra ID and managed identities; the web app has
+  no IP allow-list because users open it in their browsers. Option: VNet integration with private
+  endpoints. PSRule rules excluded: `Azure.AI.PublicAccess`, `Azure.AI.PrivateEndpoints`,
+  `Azure.ContainerApp.PublicAccess`, `Azure.ContainerApp.RestrictIngress`, `Azure.Cosmos.PublicAccess`,
+  `Azure.Storage.Firewall`.
 - No Microsoft Defender for Cloud plans.
-- Azure AI Search with one replica (no SLA); Azure Container Registry Basic (approved, Q-6); web app
-  scales to zero; a single alert worker; no staging environment; no load tests.
+- Azure AI Search with one replica (no SLA; PSRule rules excluded: `Azure.Search.QuerySLA`,
+  `Azure.Search.IndexSLA`); Azure Container Registry Basic (approved, Q-6; `Azure.ACR.MinSku`); web app
+  scales to zero and a single alert worker (`Azure.ContainerApp.MinReplicas`); no staging environment;
+  no load tests.
 - Application Insights still accepts ingestion with its connection string (needed by the Foundry
   tracing connection); Communication Services access keys cannot be switched off with the API version
   used (the app uses Entra ID only).
@@ -826,7 +833,7 @@ GitHub Actions (`.github/workflows/ci.yml`; no Azure sign-in, no secrets):
 | Tests | Unit, golden, authorization, safety and UI DOM tests; golden run with 100 % required | `golden-summary` |
 | UI (Playwright) | Starts the offline demo and runs the browser tests with screenshots | `ui-screenshots` |
 | Bicep | `az bicep build` of `infra/main.bicep` | `arm-templates` |
-| Well-Architected check | PSRule for Azure with written suppressions (`.ps-rule/`, loaded with `-Path`) | `psrule-report` |
+| Well-Architected check | PSRule for Azure; documented deviations excluded in `ps-rule.yaml` | `psrule-report` |
 | Hygiene | Secret scan and workflow validation | – |
 
 If a job fails, open the run: the summary page shows the annotations (GitHub shows only the first ten

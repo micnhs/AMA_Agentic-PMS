@@ -37,11 +37,13 @@ jobs:
       - name: Ruff (findings also appear as annotations on the run summary page)
         run: ruff check --output-format=github .
       - name: Shell scripts (bash -n and ShellCheck)
+        if: ${{ !cancelled() }}
         run: |
           for file in scripts/*.sh scripts/lib/*.sh; do bash -n "$file"; done
           sh -n docker/entrypoint.sh
           shellcheck -x --source-path=SCRIPTDIR --severity=warning scripts/*.sh scripts/lib/*.sh docker/entrypoint.sh
       - name: PowerShell scripts (parser check)
+        if: ${{ !cancelled() }}
         shell: pwsh
         run: |
           $failed = $false
@@ -182,17 +184,16 @@ jobs:
           Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
           Install-Module -Name PSRule -RequiredVersion $env:PSRULE_VERSION -Scope CurrentUser -Force
           Install-Module -Name PSRule.Rules.Azure -RequiredVersion $env:PSRULE_AZURE_VERSION -Scope CurrentUser -Force
-      - name: Assert-PSRule (WAF rules; suppressions with written reasons in .ps-rule/)
+      - name: Assert-PSRule (WAF rules; documented deviations excluded in ps-rule.yaml)
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path artifacts | Out-Null
-          # -Path loads the suppression groups; with -Module alone the working directory is not read.
-          Assert-PSRule -Option ./ps-rule.yaml -Path ./.ps-rule/ -InputPath ./infra/tests/ -Module PSRule.Rules.Azure -Format File -OutputFormat Sarif -OutputPath artifacts/ps-rule.sarif
+          Assert-PSRule -Option ./ps-rule.yaml -InputPath ./infra/tests/ -Module PSRule.Rules.Azure -Format File -OutputFormat Sarif -OutputPath artifacts/ps-rule.sarif
       - name: List every PSRule finding on the run summary page (the annotations show only the first 10)
         if: failure()
         shell: pwsh
         run: |
-          $results = @(Invoke-PSRule -Option ./ps-rule.yaml -Path ./.ps-rule/ -InputPath ./infra/tests/ -Module PSRule.Rules.Azure -Format File -Outcome Fail, Error -WarningAction SilentlyContinue)
+          $results = @(Invoke-PSRule -Option ./ps-rule.yaml -InputPath ./infra/tests/ -Module PSRule.Rules.Azure -Format File -Outcome Fail, Error -WarningAction SilentlyContinue)
           $lines = [System.Collections.Generic.List[string]]::new()
           $lines.Add("### PSRule for Azure: $($results.Count) failed or errored results (complete list)")
           $lines.Add('')

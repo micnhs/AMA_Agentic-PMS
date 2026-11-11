@@ -668,8 +668,8 @@ conformity.
 | Operational excellence | Everything as code; CI with lint, tests, Bicep build and PSRule check; preflight and smoke test; diagnostics to Log Analytics; workbook and alert rules; versions in every audit record | No staging environment | T09, T10, T29, T31 |
 | Performance efficiency | Container Apps scale with load; limits for tool calls, rounds and run time; alert latency is measured | No load tests | T04, T29 |
 
-PSRule for Azure checks the templates in CI (pinned versions); every suppressed rule has a written reason
-in `.ps-rule/waf-deviations.Rule.yaml`.
+PSRule for Azure checks the templates in CI (pinned versions); the rules the demo deliberately does not
+meet are excluded in `ps-rule.yaml` (`rule.exclude`), each group with its written reason (README, limits).
 
 ## Configuration
 

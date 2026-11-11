@@ -422,7 +422,7 @@ def odata_predicate(expr: str | None) -> Callable[[dict[str, Any]], bool]:
         m_any = re.match(r"^(\w+)/any\((\w+):\s*\2\s+eq\s+('(?:[^']|'')*')\)$", part)
         m_cmp = re.match(r"^(\w+)\s+(eq|ne|gt|ge|lt|le)\s+(.+)$", part)
         if m_in:
-            field, values, sep = m_in.group(1), _odata_literal(m_in.group(2)).split(m_in.group(3)), m_in.group(3)
+            field, values = m_in.group(1), _odata_literal(m_in.group(2)).split(m_in.group(3))
             conds.append(lambda d, f=field, v=values: d.get(f) in v)
         elif m_any:
             field, value = m_any.group(1), _odata_literal(m_any.group(3))

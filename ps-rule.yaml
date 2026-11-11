@@ -1,9 +1,9 @@
 # PSRule for Azure: Well-Architected check of the Bicep templates in CI (concept 6.11, ADR-011, T31).
 # Versions are pinned in .github/workflows/ci.yml (PSRule 2.9.0, PSRule.Rules.Azure 1.39.0).
-# Deliberate deviations of the demo baseline are suppressed only in .ps-rule/*.Rule.yaml, each with
-# a written reason (Synopsis) that matches the README limits and OI-037. Nothing is excluded here.
-# Run with '-Path ./.ps-rule/': when -Module is given, Assert-PSRule does not read the working
-# directory, so without -Path the suppression groups are silently ignored (CI run #12, 11 Nov 2026).
+# Deliberate deviations of the demo baseline are excluded under 'rule.exclude' below, each group with
+# its written reason; the same list is in the README (Limits and deviations) and in OI-037.
+# Suppression groups in .ps-rule/ were not applied by PSRule 2.9.0 in CI (runs #12 and #14, 11 Nov
+# 2026, also with -Path ./.ps-rule/), so this file, which CI demonstrably reads, holds the deviations.
 
 requires:
   PSRule: ">=2.9.0"
@@ -12,6 +12,36 @@ requires:
 include:
   module:
     - PSRule.Rules.Azure
+
+# Excluded rules are not evaluated for any resource. Each one is a documented deviation of the demo
+# baseline; options with extra cost need the project owner's approval as a paid service. The list is
+# exactly the set of findings of CI run #14 (11 Nov 2026: 214 rules processed, 13 failed).
+rule:
+  exclude:
+    # Public endpoints protected by Microsoft Entra ID and managed identities instead of private
+    # networking: private endpoints and VNet integration add cost and setup effort for a self-deployed
+    # demo with synthetic data only. The web app is opened in browsers (no IP allow-list); Entra ID
+    # sign-in with app roles protects it.
+    - Azure.AI.PublicAccess
+    - Azure.AI.PrivateEndpoints
+    - Azure.ContainerApp.PublicAccess
+    - Azure.ContainerApp.RestrictIngress
+    - Azure.Cosmos.PublicAccess
+    - Azure.Storage.Firewall
+    # One EU region by design (concept 3.4): no geo-replicated storage; no zone redundancy (cost).
+    # Standard_ZRS storage is offered as a low-cost parameter (AZURE_STORAGE_SKU).
+    - Azure.ContainerApp.AvailabilityZone
+    - Azure.Storage.UseReplication
+    # Azure AI Search with one Basic search unit: no replicas for the query and indexing SLA; Basic is
+    # the approved default and already the largest fixed cost item (ADR-007, OI-035).
+    - Azure.Search.QuerySLA
+    - Azure.Search.IndexSLA
+    # Azure Container Registry Basic, approved by the project owner on 10 Nov 2026 (decision Q-6).
+    - Azure.ACR.MinSku
+    # The web app scales to zero and the alert worker runs exactly one replica on purpose: a single
+    # worker avoids duplicate alert e-mails and keeps the 60-second alert target at minimal cost
+    # (concept 6.9, 14). No availability SLA is claimed for the demo.
+    - Azure.ContainerApp.MinReplicas
 
 input:
   pathIgnore:
