@@ -49,7 +49,7 @@ jobs:
       - name: Install the Azure Developer CLI
         uses: Azure/setup-azd@v2.0.0
       - name: Azure CLI sign-in (OIDC, no stored secrets)
-        uses: azure/login@v2.2.0
+        uses: azure/login@v3.1.0
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
