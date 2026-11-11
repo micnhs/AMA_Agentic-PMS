@@ -1,0 +1,19 @@
+DOCUMENT DE DÉMONSTRATION SYNTHÉTIQUE – DONNÉES FICTIVES – AUCUN PATIENT, AUCUNE PERSONNE, AUCUN ÉTABLISSEMENT NI PRODUIT RÉEL
+
+Centre hospitalier de démonstration du Val-de-Démo (fictif) – Service de chirurgie cardiaque
+Le 12 novembre 2026
+
+À : Fictivia Medical Ltd. (fictif), service de vigilance
+
+Objet : Thrombose de bioprothèse aortique – patient P-FR-5521
+
+Madame, Monsieur,
+
+Nous vous informons qu'un patient (code P-FR-5521, 71 ans), ayant bénéficié le 04/08/2026 d'un remplacement valvulaire aortique par une bioprothèse Fictivia CB-25 (lot CB25-2605-C), a été hospitalisé le 06/11/2026 pour une dyspnée d'effort d'aggravation progressive.
+
+L'échocardiographie transœsophagienne a mis en évidence une thrombose de la valve, avec un gradient moyen de 38 mmHg et un épaississement des feuillets. L'INR était infrathérapeutique (1,4) en raison d'une interruption du traitement anticoagulant par le patient. Sous héparine puis anticoagulation orale, le gradient moyen est redescendu à 18 mmHg le 10/11/2026. Aucune embolie n'a été constatée. L'évolution est favorable ; la sortie est prévue le 14/11/2026.
+
+La thrombose valvulaire figure parmi les effets indésirables connus mentionnés dans la notice d'utilisation. Nous vous transmettons cette information dans le cadre de la matériovigilance.
+
+Veuillez agréer, Madame, Monsieur, nos salutations distinguées.
+Le médecin responsable du service (rôle fictif, aucun nom utilisé dans la démo)

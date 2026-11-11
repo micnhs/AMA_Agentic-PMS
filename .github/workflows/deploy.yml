@@ -1,0 +1,86 @@
+# Manual deployment to Azure with azd (concept 6.10, D-20). Sign-in with OpenID Connect: the client,
+# tenant and subscription IDs come from repository variables; no secret is stored anywhere.
+# One-time setup (README): an Entra app or user-assigned identity with a federated credential for
+# this repository and the GitHub environment 'azure-demo', Owner on the subscription, and the
+# repository variables used below. Service principals usually cannot create app registrations, so
+# set ENTRA_EXISTING_APP_CLIENT_ID (bring your own app registration).
+name: Deploy to Azure (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Type DEPLOY to provision and deploy the demo (synthetic data only)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-azure
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: azd provision and deploy
+    if: ${{ inputs.confirm == 'DEPLOY' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment: azure-demo
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+      AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+      DEPLOYER_EMAIL: ${{ vars.DEPLOYER_EMAIL }}
+      ALERT_RECIPIENTS: ${{ vars.ALERT_RECIPIENTS }}
+      ENTRA_EXISTING_APP_CLIENT_ID: ${{ vars.ENTRA_EXISTING_APP_CLIENT_ID }}
+      MODEL_FALLBACK_ALL_GENERAL: ${{ vars.MODEL_FALLBACK_ALL_GENERAL }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4.2.2
+      - name: Set up Python
+        uses: actions/setup-python@v5.3.0
+        with:
+          python-version: "3.12"
+      - name: Install the Azure Developer CLI
+        uses: Azure/setup-azd@v2.0.0
+      - name: Azure CLI sign-in (OIDC, no stored secrets)
+        uses: azure/login@v2.2.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: azd sign-in (OIDC)
+        run: azd auth login --client-id "$AZURE_CLIENT_ID" --federated-credential-provider github --tenant-id "$AZURE_TENANT_ID"
+      - name: Select or create the azd environment
+        run: |
+          : "${AZURE_ENV_NAME:?Set the repository variable AZURE_ENV_NAME}"
+          location="${AZURE_LOCATION:-swedencentral}"
+          azd env new "$AZURE_ENV_NAME" --location "$location" --subscription "$AZURE_SUBSCRIPTION_ID" --no-prompt || azd env select "$AZURE_ENV_NAME"
+          azd env set AZURE_LOCATION "$location"
+          azd env set AZURE_SUBSCRIPTION_ID "$AZURE_SUBSCRIPTION_ID"
+          azd env set AZURE_PRINCIPAL_TYPE ServicePrincipal
+          for name in DEPLOYER_EMAIL ALERT_RECIPIENTS ENTRA_EXISTING_APP_CLIENT_ID MODEL_FALLBACK_ALL_GENERAL; do
+            value="$(env | awk -v k="$name" 'index($0, k "=") == 1 { print substr($0, length(k) + 2); exit }')"
+            if [ -n "$value" ]; then azd env set "$name" "$value"; fi
+          done
+      - name: Preflight
+        run: bash scripts/preflight.sh
+      - name: Provision (Bicep)
+        run: azd provision --no-prompt
+        env:
+          PREFLIGHT_DONE: "1"
+      - name: Deploy the container apps
+        run: azd deploy --no-prompt
+      - name: Health check
+        run: |
+          web_url="$(azd env get-value WEB_URL)"
+          for attempt in $(seq 1 30); do
+            if curl -fsS "$web_url/healthz" > /dev/null; then echo "Healthy: $web_url"; exit 0; fi
+            echo "Waiting for $web_url/healthz ($attempt/30)"; sleep 10
+          done
+          echo "::error::$web_url/healthz did not answer"; exit 1

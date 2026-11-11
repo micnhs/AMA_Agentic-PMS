@@ -1,0 +1,100 @@
+/* PMS agent demo - plain CSS, no framework. State is never shown by colour alone: every badge has text. */
+:root {
+  --ink: #1d232b;
+  --muted: #59636e;
+  --line: #d4d9de;
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --accent: #0b5cad;
+  --critical: #b3261e;
+  --critical-bg: #fdecea;
+  --overdue: #a50e0e;
+  --overdue-bg: #ffe1df;
+  --ok: #1b6e3a;
+  --draft: #6a3fb5;
+  --warn-bg: #fff4ce;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: var(--bg); }
+a { color: var(--accent); }
+code { font-size: 0.86em; color: var(--muted); }
+h1 { font-size: 1.6rem; margin: 0.4rem 0 0.8rem; }
+h2 { font-size: 1.2rem; margin: 0 0 0.6rem; }
+h3 { font-size: 1rem; margin: 1rem 0 0.4rem; }
+
+.disclaimer { background: var(--warn-bg); border-bottom: 2px solid #c9a400; padding: 0.5rem 1rem; font-size: 0.86rem; }
+.topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1.4rem; padding: 0.6rem 1rem; background: #13294b; color: #fff; }
+.topbar a { color: #fff; text-decoration: none; }
+.topbar .brand { font-weight: 700; }
+.topbar nav { display: flex; flex-wrap: wrap; gap: 0.2rem 0.9rem; }
+.topbar nav a.active { text-decoration: underline; text-underline-offset: 4px; }
+.topbar .user { margin-left: auto; font-size: 0.9rem; }
+.topbar .user form.inline { display: inline; }
+main { padding: 1rem; max-width: 1500px; margin: 0 auto; }
+footer { padding: 1rem; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--line); }
+
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 0.9rem 1rem; margin: 0 0 1rem; }
+section section { border: 0; padding: 0; margin: 0.8rem 0 0; }
+section.critical-queue { border: 2px solid var(--critical); }
+.hint, .legend { color: var(--muted); font-size: 0.88rem; }
+.empty, .unknown { color: var(--muted); font-style: italic; }
+.problem { background: var(--critical-bg); padding: 0.5rem 0.7rem; border-radius: 4px; }
+.flash { background: #e3f4e8; border: 1px solid #9fd3ae; padding: 0.5rem 0.7rem; border-radius: 4px; }
+.callout.critical { background: var(--critical-bg); border: 1px solid var(--critical); padding: 0.6rem 0.8rem; border-radius: 4px; }
+.refresh-notice { background: #e8f0fb; border: 1px solid #a9c4ea; padding: 0.4rem 0.7rem; border-radius: 4px; }
+.counts { display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; list-style: none; padding: 0; margin: 0 0 1rem; }
+.earliest { font-size: 1.05rem; }
+
+table { border-collapse: collapse; width: 100%; margin: 0.3rem 0 0.6rem; font-size: 0.88rem; }
+th, td { border: 1px solid var(--line); padding: 0.3rem 0.45rem; text-align: left; vertical-align: top; }
+th { background: #eef1f4; font-weight: 600; }
+tr.overdue td { background: var(--overdue-bg); }
+tr.driving td { font-weight: 600; }
+td.step { white-space: nowrap; }
+.step-done { color: var(--ok); }
+.step-running { color: var(--accent); font-weight: 600; }
+.step-failed { color: var(--critical); font-weight: 600; }
+.step-queued, .step-not_queued, .step-skipped { color: var(--muted); }
+.waiting { color: var(--critical); font-size: 0.82rem; }
+
+.badge { display: inline-block; padding: 0.05rem 0.45rem; border-radius: 3px; border: 1px solid var(--line); background: #f0f2f5; font-size: 0.82rem; }
+.badge.critical { background: var(--critical); color: #fff; border-color: var(--critical); font-weight: 700; }
+.badge.noncritical { color: var(--muted); }
+.countdown { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.countdown.overdue { color: var(--overdue); font-weight: 700; }
+.flag { display: inline-block; margin: 0 0.2rem; padding: 0 0.3rem; border: 1px dashed var(--critical); color: var(--critical); font-size: 0.8rem; }
+.draft-label { display: inline-block; padding: 0 0.4rem; border: 1px solid var(--draft); color: var(--draft); border-radius: 3px; font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
+.attribution { font-size: 0.8rem; color: var(--muted); }
+.ok { color: var(--ok); }
+.broken { color: var(--critical); }
+
+dl { display: grid; grid-template-columns: minmax(10rem, max-content) 1fr; gap: 0.25rem 1rem; margin: 0.3rem 0; }
+dt { font-weight: 600; }
+dd { margin: 0; }
+dd ul, td ul { margin: 0; padding-left: 1.1rem; }
+
+article.signal { border-top: 1px solid var(--line); padding-top: 0.6rem; margin-top: 0.6rem; }
+pre.letter-text, pre.draft-text { white-space: pre-wrap; word-break: break-word; background: #fbfbfc; border: 1px solid var(--line); padding: 0.7rem; font-size: 0.84rem; max-height: 32rem; overflow: auto; }
+mark.withheld { background: #ffd6d2; outline: 1px dashed var(--critical); }
+q { font-style: italic; }
+
+details.action { border: 1px solid var(--line); border-radius: 4px; padding: 0.4rem 0.7rem; margin: 0 0 0.5rem; background: #fcfcfd; }
+details.action > summary { cursor: pointer; font-weight: 600; }
+details.action[data-permitted="false"] > summary { color: var(--muted); }
+.hint .allowed, .hint .not-permitted, .hint .not-applicable, .hint .note { display: block; }
+.not-permitted, .not-applicable { color: var(--critical); }
+form.action-form { display: grid; gap: 0.5rem; max-width: 46rem; margin: 0.5rem 0; }
+form label { display: grid; gap: 0.15rem; }
+form .label-text { font-weight: 600; font-size: 0.88rem; }
+form small { color: var(--muted); }
+input, select, textarea, button { font: inherit; }
+input, select, textarea { padding: 0.3rem 0.4rem; border: 1px solid #aab2bb; border-radius: 3px; background: #fff; }
+button, .button-link { justify-self: start; padding: 0.35rem 0.9rem; border: 1px solid var(--accent); border-radius: 4px; background: var(--accent); color: #fff; cursor: pointer; text-decoration: none; display: inline-block; }
+button.secondary { background: transparent; border-color: #fff; color: #fff; padding: 0.1rem 0.6rem; }
+form.inline-form { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+form.filter-form { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: end; margin: 0 0 1rem; }
+ul.user-list { list-style: none; padding: 0; display: grid; gap: 0.6rem; }
+ul.user-list button { min-width: 18rem; text-align: left; }
+ul.user-list small { display: block; color: var(--muted); margin-top: 0.15rem; }
+section.error { border: 2px solid var(--critical); }

@@ -1,0 +1,41 @@
+# PSRule for Azure: Well-Architected check of the Bicep templates in CI (concept 6.11, ADR-011, T31).
+# Versions are pinned in .github/workflows/ci.yml (PSRule 2.9.0, PSRule.Rules.Azure 1.39.0).
+# Deliberate deviations of the demo baseline are suppressed only in .ps-rule/*.Rule.yaml, each with
+# a written reason (Synopsis) that matches the README limits and OI-037. Nothing is excluded here.
+
+requires:
+  PSRule: ">=2.9.0"
+  PSRule.Rules.Azure: ">=1.39.0"
+
+include:
+  module:
+    - PSRule.Rules.Azure
+
+input:
+  pathIgnore:
+    - "**"
+    - "!infra/tests/*.tests.bicep"
+
+configuration:
+  # Expand Bicep test entry points (infra/tests/*.tests.bicep call the real modules).
+  AZURE_BICEP_FILE_EXPANSION: true
+  AZURE_BICEP_FILE_EXPANSION_TIMEOUT: 60
+  AZURE_BICEP_CHECK_TOOL: true
+  AZURE_BICEP_MINIMUM_VERSION: "0.30.0"
+  # One EU region for all resources (concept 3.4).
+  AZURE_RESOURCE_ALLOWED_LOCATIONS:
+    - swedencentral
+    - germanywestcentral
+    - francecentral
+    - italynorth
+    - polandcentral
+    - spaincentral
+    - westeurope
+    - northeurope
+    - austriaeast
+    - belgiumcentral
+    - denmarkeast
+
+output:
+  culture:
+    - en-US

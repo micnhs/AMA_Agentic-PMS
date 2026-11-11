@@ -1,0 +1,7 @@
+# Shell scripts must keep LF line endings, also in Windows clones (bash and the container entrypoint).
+*.sh text eol=lf
+docker/entrypoint.sh text eol=lf
+Dockerfile text eol=lf
+# Generated or binary demo files.
+*.pdf binary
+*.png binary

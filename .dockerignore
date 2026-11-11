@@ -1,0 +1,30 @@
+# Keep the build context small and free of local state. Only src/, config/, data/,
+# docker/entrypoint.sh and requirements.txt are needed in the image.
+.git
+.github
+.azure
+.venv
+venv
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+var
+outbox
+artifacts
+playwright-report
+test-results
+smoke-test-result.json
+*.log
+.env
+.env.*
+docs
+infra
+scripts
+tests
+README.md
+requirements-dev.txt
+pyproject.toml
+ps-rule.yaml
+.ps-rule
+azure.yaml

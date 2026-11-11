@@ -1,0 +1,35 @@
+{
+  "note": "SHA-256 of each prompt body per version. Changing a prompt requires a new version and a new hash here (tests/unit/test_agents.py).",
+  "prompts": {
+    "a1-signal-ingestion": {
+      "agent": "A1",
+      "version": "1.0.0",
+      "sha256": "b60a7af908667a253689fb67ddb6d11eae6533598c813d1701e964a3845f9fc7",
+      "file": "a1_signal_ingestion.md"
+    },
+    "a2-product-matching": {
+      "agent": "A2",
+      "version": "1.0.0",
+      "sha256": "144fa6f87d9a08517d70eadb414b941ce0c55b861354f478ea4af1924ce38f41",
+      "file": "a2_product_matching.md"
+    },
+    "a6-evidence-correlation": {
+      "agent": "A6",
+      "version": "1.0.0",
+      "sha256": "99e4cce7a04f831b6bf9f029be0c2c518194e3bfc70e945f32103a67d5037b31",
+      "file": "a6_evidence_correlation.md"
+    },
+    "a3-medical-analysis": {
+      "agent": "A3",
+      "version": "1.0.0",
+      "sha256": "4f59b2c9ba1532d5faa2ea12755ccc8ea61a29ac0c7211910aaaf155ce569dc2",
+      "file": "a3_medical_analysis.md"
+    },
+    "a4-vigilance-reporting": {
+      "agent": "A4",
+      "version": "1.0.0",
+      "sha256": "41e7797c36bf303426f913fc16aca949d3cf99410994da1a8d97ff2f5931a8dd",
+      "file": "a4_vigilance_reporting.md"
+    }
+  }
+}

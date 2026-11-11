@@ -1,0 +1,105 @@
+{
+  "note": "FICTIONAL – invented for the PMS demo. Not a real publication, document, case, person, institution or product. Only findings approved by a human count as findings.",
+  "cases": [
+    {
+      "id": "H-001",
+      "received": "2026-10-14",
+      "country": "IT",
+      "family": "demo-cardio-b",
+      "model": "CB-21",
+      "lot": "CB21-2607-A",
+      "tags": [
+        "leaflet tear",
+        "early structural valve deterioration"
+      ],
+      "event": "Leaflet tear seven weeks after implantation; redo surgery; patient recovered.",
+      "finding": "Causality possible. Lot review requested (see TD-001). No root cause identified yet.",
+      "finding_status": "Approved by the medical reviewer (fictional role) on 2026-10-21",
+      "reporting": "Initial report recorded by the regulatory role (fictional) on 2026-10-22"
+    },
+    {
+      "id": "H-002",
+      "received": "2025-11-05",
+      "country": "DE",
+      "family": "demo-ortho-a",
+      "model": "OA-L36",
+      "lot": "OA-L36-2509-A",
+      "tags": [
+        "liner dissociation",
+        "locking mechanism"
+      ],
+      "event": "Liner dissociation five months after implantation; locking ring deformed; revision.",
+      "finding": "Causality probable. Locking ring deformation. Root-cause investigation CAPA-DEMO-07 opened and still open.",
+      "finding_status": "Approved by the medical reviewer (fictional role) on 2025-11-20",
+      "reporting": "Initial report recorded by the regulatory role (fictional) on 2025-11-12"
+    },
+    {
+      "id": "H-003",
+      "received": "2024-06-03",
+      "country": "GB-ENG",
+      "family": "demo-ortho-a",
+      "model": "OA-S5",
+      "lot": "OA-S5-2311-A",
+      "tags": [
+        "stem fracture",
+        "fatigue fracture"
+      ],
+      "event": "Stem fracture at the neck-body junction eleven months after implantation; body mass index 37; revision.",
+      "finding": "Causality probable. Fatigue fracture consistent with the residual risk described in TD-003.",
+      "finding_status": "Approved by the medical reviewer (fictional role) on 2024-06-18",
+      "reporting": "Initial report recorded by the regulatory role (fictional) on 2024-06-11"
+    },
+    {
+      "id": "H-004",
+      "received": "2026-02-09",
+      "country": "FR",
+      "family": "demo-cardio-b",
+      "model": "CB-25",
+      "lot": "CB25-2512-B",
+      "tags": [
+        "valve thrombosis",
+        "anticoagulation"
+      ],
+      "event": "Valve thrombosis with subtherapeutic INR; resolved under anticoagulation.",
+      "finding": "Causality possible. Listed side effect CV-02; patient-related factor dominant.",
+      "finding_status": "Approved by the medical reviewer (fictional role) on 2026-02-20",
+      "reporting": "Initial report recorded by the regulatory role (fictional) on 2026-02-18"
+    },
+    {
+      "id": "H-005",
+      "received": "2025-12-02",
+      "country": "IT",
+      "family": "demo-ortho-a",
+      "model": "OA-K36",
+      "lot": "OA-K36-2508-A",
+      "tags": [
+        "squeaking",
+        "ceramic-on-ceramic"
+      ],
+      "event": "Painless squeaking; no treatment.",
+      "finding": "Causality probable. Non-serious; listed side effect OR-11.",
+      "finding_status": "Approved by the medical reviewer (fictional role) on 2025-12-10",
+      "reporting": "Closed as non-reportable by the medical reviewer (fictional role) with reason on 2025-12-10"
+    }
+  ],
+  "process_findings": [
+    {
+      "id": "demo-finding-01",
+      "status": "Open",
+      "summary": "Hypothetical: a follow-up like demo-msg-003 overwrote the original manufacturer awareness.",
+      "source_lines": "03-scenario.md, line 1517"
+    },
+    {
+      "id": "demo-finding-02",
+      "status": "Open",
+      "summary": "Hypothetical: duplicates and follow-ups counted as new cases and shown as a risk rate without an exposure denominator.",
+      "source_lines": "03-scenario.md, line 1518"
+    },
+    {
+      "id": "demo-finding-03",
+      "status": "Open",
+      "summary": "Hypothetical: an outgoing report version changed without a version-bound medical approval.",
+      "source_lines": "03-scenario.md, line 1519"
+    }
+  ]
+}

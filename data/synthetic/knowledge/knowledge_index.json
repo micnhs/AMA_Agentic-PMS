@@ -1,0 +1,421 @@
+{
+  "corpus_version": "1.0",
+  "note": "FICTIONAL – invented for the PMS demo. Not a real publication, document, case, person, institution or product.",
+  "event_terms": {
+    "leaflet tear": [
+      "torn leaflet",
+      "leaflet tear",
+      "Segelriss",
+      "déchirure",
+      "lacerazione"
+    ],
+    "endocarditis": [
+      "Endokarditis",
+      "endocarditis",
+      "endocardite",
+      "Vegetationen",
+      "vegetation"
+    ],
+    "stem fracture": [
+      "fracture of the stem",
+      "stem fracture",
+      "Schaftbruch"
+    ],
+    "liner dissociation": [
+      "dissociated",
+      "dissociation",
+      "Dissoziation"
+    ],
+    "valve thrombosis": [
+      "thrombose de la valve",
+      "valve thrombosis",
+      "Klappenthrombose",
+      "trombosi"
+    ],
+    "squeaking": [
+      "cigolio",
+      "squeak",
+      "Quietschen",
+      "grincement"
+    ],
+    "ceramic head fracture": [
+      "fracture of the ceramic head",
+      "Keramikkopfbruch",
+      "frattura della testina"
+    ],
+    "radiolucent line": [
+      "Saum",
+      "radiolucent",
+      "liseré"
+    ],
+    "cup loosening": [
+      "Lockerung",
+      "loosening",
+      "descellement",
+      "mobilizzazione"
+    ]
+  },
+  "items": [
+    {
+      "id": "LIT-001",
+      "type": "literature",
+      "file": "data/synthetic/knowledge/literature/LIT-001.md",
+      "family": "demo-cardio-b",
+      "models": [],
+      "lots": [],
+      "tags": [
+        "leaflet tear",
+        "early structural valve deterioration"
+      ],
+      "title": "Early leaflet tears in stented pericardial bioprostheses: a case series",
+      "status": "fictional reference",
+      "sha256": "b347f10db6e38b51db989f4156dd918d3004626f4582ffcb7884efb600b95708"
+    },
+    {
+      "id": "LIT-002",
+      "type": "literature",
+      "file": "data/synthetic/knowledge/literature/LIT-002.md",
+      "family": "demo-cardio-b",
+      "models": [],
+      "lots": [],
+      "tags": [
+        "endocarditis",
+        "infection"
+      ],
+      "title": "Prosthetic valve endocarditis after dental procedures: a narrative review",
+      "status": "fictional reference",
+      "sha256": "81a2dbd462325f7015e8998972f27e71086e8832e9eb9504f790c7b6aa60dac3"
+    },
+    {
+      "id": "LIT-003",
+      "type": "literature",
+      "file": "data/synthetic/knowledge/literature/LIT-003.md",
+      "family": "demo-ortho-a",
+      "models": [],
+      "lots": [],
+      "tags": [
+        "stem fracture",
+        "fatigue fracture"
+      ],
+      "title": "Fatigue fractures of cementless femoral stems at the neck-body junction: a registry analysis",
+      "status": "fictional reference",
+      "sha256": "12c92a25424f7b454a3e957ad20bc9d749ae2e52dfb9d7cf13b6f46934553a56"
+    },
+    {
+      "id": "LIT-004",
+      "type": "literature",
+      "file": "data/synthetic/knowledge/literature/LIT-004.md",
+      "family": "demo-ortho-a",
+      "models": [],
+      "lots": [],
+      "tags": [
+        "liner dissociation",
+        "locking mechanism"
+      ],
+      "title": "Polyethylene liner dissociation in modular acetabular systems: case reports",
+      "status": "fictional reference",
+      "sha256": "6914ce4467c0a2fd7149cbae8384f9c013fc6a91f1720a11c302b700c00d386d"
+    },
+    {
+      "id": "LIT-005",
+      "type": "literature",
+      "file": "data/synthetic/knowledge/literature/LIT-005.md",
+      "family": "demo-cardio-b",
+      "models": [],
+      "lots": [],
+      "tags": [
+        "valve thrombosis",
+        "anticoagulation"
+      ],
+      "title": "Bioprosthetic valve thrombosis and anticoagulation adherence: a cohort description",
+      "status": "fictional reference",
+      "sha256": "08eb8ba5a50696b4d27d450aae442e03b01a94b69361f6a8b0fbbba0364b00f9"
+    },
+    {
+      "id": "LIT-006",
+      "type": "literature",
+      "file": "data/synthetic/knowledge/literature/LIT-006.md",
+      "family": "demo-ortho-a",
+      "models": [],
+      "lots": [],
+      "tags": [
+        "squeaking",
+        "ceramic-on-ceramic"
+      ],
+      "title": "Squeaking in ceramic-on-ceramic hip bearings: a review",
+      "status": "fictional reference",
+      "sha256": "b046df46ca106dfab610e85ffe56d1c5219281aa02ffc27a693c9841c3e1bd35"
+    },
+    {
+      "id": "LIT-007",
+      "type": "literature",
+      "file": "data/synthetic/knowledge/literature/LIT-007.md",
+      "family": "demo-ortho-a",
+      "models": [],
+      "lots": [],
+      "tags": [
+        "ceramic head fracture",
+        "component fracture"
+      ],
+      "title": "Fracture of ceramic femoral heads: a review",
+      "status": "fictional reference",
+      "sha256": "cf2e026a8b7208a960253a3c4a65681e67b29748c02ab6322ea31514baab3049"
+    },
+    {
+      "id": "LIT-008",
+      "type": "literature",
+      "file": "data/synthetic/knowledge/literature/LIT-008.md",
+      "family": "demo-ortho-a",
+      "models": [],
+      "lots": [],
+      "tags": [
+        "radiolucent line",
+        "cup fixation"
+      ],
+      "title": "Radiolucent lines around cementless acetabular cups: a follow-up study",
+      "status": "fictional reference",
+      "sha256": "499c44cbec05cd4a914549796a845a7afe46577516cf78db295e35d99df9ee9f"
+    },
+    {
+      "id": "LIT-009",
+      "type": "literature",
+      "file": "data/synthetic/knowledge/literature/LIT-009.md",
+      "family": "demo-ortho-a",
+      "models": [],
+      "lots": [],
+      "tags": [
+        "cup loosening",
+        "dislocation",
+        "aseptic loosening"
+      ],
+      "title": "Aseptic loosening of cementless cups and instability: a review",
+      "status": "fictional reference",
+      "sha256": "cfcc99dd2af5c7c52eab857d8f1dea1172f2a82fb9386658120e4396dc89c14a"
+    },
+    {
+      "id": "TD-001",
+      "type": "technical_document",
+      "file": "data/synthetic/knowledge/technical_documents/TD-001.md",
+      "family": "demo-cardio-b",
+      "models": [
+        "CB-21"
+      ],
+      "lots": [
+        "CB21-2607-A"
+      ],
+      "tags": [
+        "leaflet thickness",
+        "leaflet tear",
+        "deviation"
+      ],
+      "title": "Lot release record CB21-2607-A (excerpt)",
+      "status": "controlled document (fictional)",
+      "sha256": "0854146f8d7ea9c384eae1a71cec63a2377eefbaf2f137345cbf50084af14e18"
+    },
+    {
+      "id": "TD-002",
+      "type": "technical_document",
+      "file": "data/synthetic/knowledge/technical_documents/TD-002.md",
+      "family": "demo-ortho-a",
+      "models": [
+        "OA-L36",
+        "OA-C52",
+        "OA-C54"
+      ],
+      "lots": [],
+      "tags": [
+        "liner dissociation",
+        "locking mechanism"
+      ],
+      "title": "Design verification summary – OA-L/OA-C liner locking mechanism (excerpt)",
+      "status": "controlled document (fictional)",
+      "sha256": "33e47492662b57d481a595d065e7dff9b03b5f50c617480efaa4e40c64fb139f"
+    },
+    {
+      "id": "TD-003",
+      "type": "technical_document",
+      "file": "data/synthetic/knowledge/technical_documents/TD-003.md",
+      "family": "demo-ortho-a",
+      "models": [
+        "OA-S5"
+      ],
+      "lots": [],
+      "tags": [
+        "stem fracture",
+        "fatigue fracture"
+      ],
+      "title": "Risk management file – OA-S stem, hazard H-12 fatigue fracture (excerpt)",
+      "status": "controlled document (fictional)",
+      "sha256": "d2d91f86dc8f083313d38194872293267100f220ed2a5ee34ade1c42b314c1d3"
+    },
+    {
+      "id": "TD-004",
+      "type": "technical_document",
+      "file": "data/synthetic/knowledge/technical_documents/TD-004.md",
+      "family": "demo-ortho-a",
+      "models": [
+        "OA-C54"
+      ],
+      "lots": [
+        "OA-C54-2601-A",
+        "OA-C54-2601-C",
+        "OA-C54-2601-D"
+      ],
+      "tags": [
+        "lot history"
+      ],
+      "title": "Lot history OA-C54, January 2026 (excerpt)",
+      "status": "controlled document (fictional)",
+      "sha256": "d90534ef85c10b65659d12f3bcfb6f642256e9aa385f0ebc770063f904795f8a"
+    },
+    {
+      "id": "TD-005",
+      "type": "technical_document",
+      "file": "data/synthetic/knowledge/technical_documents/TD-005.md",
+      "family": "demo-cardio-b",
+      "models": [
+        "CB-21",
+        "CB-23",
+        "CB-25"
+      ],
+      "lots": [],
+      "tags": [
+        "endocarditis",
+        "anticoagulation",
+        "valve thrombosis"
+      ],
+      "title": "Instructions for use – revision history, CB aortic bioprosthesis (excerpt)",
+      "status": "controlled document (fictional)",
+      "sha256": "a42b4f7b599ea09b97be3b710a638b650b8fa11f8ff333ae04262b56ffd04856"
+    },
+    {
+      "id": "H-001",
+      "type": "past_case",
+      "file": "data/synthetic/knowledge/past_cases/past_cases.json",
+      "family": "demo-cardio-b",
+      "models": [
+        "CB-21"
+      ],
+      "lots": [
+        "CB21-2607-A"
+      ],
+      "tags": [
+        "leaflet tear",
+        "early structural valve deterioration"
+      ],
+      "title": "Leaflet tear seven weeks after implantation; redo surgery; patient recovered.",
+      "status": "Approved by the medical reviewer (fictional role) on 2026-10-21"
+    },
+    {
+      "id": "H-002",
+      "type": "past_case",
+      "file": "data/synthetic/knowledge/past_cases/past_cases.json",
+      "family": "demo-ortho-a",
+      "models": [
+        "OA-L36"
+      ],
+      "lots": [
+        "OA-L36-2509-A"
+      ],
+      "tags": [
+        "liner dissociation",
+        "locking mechanism"
+      ],
+      "title": "Liner dissociation five months after implantation; locking ring deformed; revision.",
+      "status": "Approved by the medical reviewer (fictional role) on 2025-11-20"
+    },
+    {
+      "id": "H-003",
+      "type": "past_case",
+      "file": "data/synthetic/knowledge/past_cases/past_cases.json",
+      "family": "demo-ortho-a",
+      "models": [
+        "OA-S5"
+      ],
+      "lots": [
+        "OA-S5-2311-A"
+      ],
+      "tags": [
+        "stem fracture",
+        "fatigue fracture"
+      ],
+      "title": "Stem fracture at the neck-body junction eleven months after implantation; body mass index 37; revision.",
+      "status": "Approved by the medical reviewer (fictional role) on 2024-06-18"
+    },
+    {
+      "id": "H-004",
+      "type": "past_case",
+      "file": "data/synthetic/knowledge/past_cases/past_cases.json",
+      "family": "demo-cardio-b",
+      "models": [
+        "CB-25"
+      ],
+      "lots": [
+        "CB25-2512-B"
+      ],
+      "tags": [
+        "valve thrombosis",
+        "anticoagulation"
+      ],
+      "title": "Valve thrombosis with subtherapeutic INR; resolved under anticoagulation.",
+      "status": "Approved by the medical reviewer (fictional role) on 2026-02-20"
+    },
+    {
+      "id": "H-005",
+      "type": "past_case",
+      "file": "data/synthetic/knowledge/past_cases/past_cases.json",
+      "family": "demo-ortho-a",
+      "models": [
+        "OA-K36"
+      ],
+      "lots": [
+        "OA-K36-2508-A"
+      ],
+      "tags": [
+        "squeaking",
+        "ceramic-on-ceramic"
+      ],
+      "title": "Painless squeaking; no treatment.",
+      "status": "Approved by the medical reviewer (fictional role) on 2025-12-10"
+    },
+    {
+      "id": "demo-finding-01",
+      "type": "process_finding",
+      "file": "data/synthetic/knowledge/past_cases/past_cases.json",
+      "family": null,
+      "models": [],
+      "lots": [],
+      "tags": [
+        "process"
+      ],
+      "title": "Hypothetical: a follow-up like demo-msg-003 overwrote the original manufacturer awareness.",
+      "status": "Open"
+    },
+    {
+      "id": "demo-finding-02",
+      "type": "process_finding",
+      "file": "data/synthetic/knowledge/past_cases/past_cases.json",
+      "family": null,
+      "models": [],
+      "lots": [],
+      "tags": [
+        "process"
+      ],
+      "title": "Hypothetical: duplicates and follow-ups counted as new cases and shown as a risk rate without an exposure denominator.",
+      "status": "Open"
+    },
+    {
+      "id": "demo-finding-03",
+      "type": "process_finding",
+      "file": "data/synthetic/knowledge/past_cases/past_cases.json",
+      "family": null,
+      "models": [],
+      "lots": [],
+      "tags": [
+        "process"
+      ],
+      "title": "Hypothetical: an outgoing report version changed without a version-bound medical approval.",
+      "status": "Open"
+    }
+  ]
+}

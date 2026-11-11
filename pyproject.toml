@@ -1,0 +1,14 @@
+# Tool configuration only (ruff, pytest). The project is not packaged; run it with PYTHONPATH=src.
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["var", ".azure", "artifacts"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+addopts = "-ra"

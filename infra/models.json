@@ -1,0 +1,19 @@
+{
+  "_comment": "Model deployments (concept ADR-002, decision Q-10 of 10 Nov 2026). Single source for infra/main.bicep (loadJsonContent) and scripts/preflight.*. Deployment type Data Zone Standard (EU data zone); GlobalStandard is never allowed. Fallback: gpt-6.1-sol for all agents (MODEL_FALLBACK_ALL_GENERAL=true).",
+  "deploymentSku": "DataZoneStandard",
+  "allowedSkus": ["DataZoneStandard", "Standard"],
+  "analysis": {
+    "deploymentName": "gpt-6-astra",
+    "modelName": "gpt-6-astra",
+    "modelVersion": "2026-09-03",
+    "modelFormat": "OpenAI",
+    "agents": ["A3", "A6"]
+  },
+  "general": {
+    "deploymentName": "gpt-6.1-sol",
+    "modelName": "gpt-6.1-sol",
+    "modelVersion": "2026-09-29",
+    "modelFormat": "OpenAI",
+    "agents": ["A1", "A2", "A4"]
+  }
+}

@@ -1,0 +1,65 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+# Azure Developer CLI project for pms-agent-demo (concept 6.8-6.10, ADR-001/011).
+# Two container apps are built from the same Dockerfile; the image entrypoint picks the process
+# from PMS_ROLE (web: 'python -m pms serve --host 0.0.0.0', worker: 'python -m pms worker').
+# Images are built remotely in Azure Container Registry, so no local Docker is needed.
+name: pms-agent-demo
+metadata:
+  template: pms-agent-demo@0.1.0
+requiredVersions:
+  azd: ">= 1.18.0"
+infra:
+  provider: bicep
+  path: infra
+  module: main
+services:
+  web:
+    project: .
+    language: python
+    host: containerapp
+    docker:
+      path: ./Dockerfile
+      context: .
+      remoteBuild: true
+  worker:
+    project: .
+    language: python
+    host: containerapp
+    docker:
+      path: ./Dockerfile
+      context: .
+      remoteBuild: true
+hooks:
+  preprovision:
+    posix:
+      shell: sh
+      run: bash ./scripts/preflight.sh --hook
+      interactive: true
+      continueOnError: false
+    windows:
+      shell: pwsh
+      run: ./scripts/preflight.ps1 -Hook; exit $LASTEXITCODE
+      interactive: true
+      continueOnError: false
+  postprovision:
+    posix:
+      shell: sh
+      run: bash ./scripts/postprovision.sh
+      interactive: true
+      continueOnError: true
+    windows:
+      shell: pwsh
+      run: ./scripts/postprovision.ps1; exit $LASTEXITCODE
+      interactive: true
+      continueOnError: true
+  postdeploy:
+    posix:
+      shell: sh
+      run: bash ./scripts/postdeploy.sh
+      interactive: true
+      continueOnError: true
+    windows:
+      shell: pwsh
+      run: ./scripts/postdeploy.ps1; exit $LASTEXITCODE
+      interactive: true
+      continueOnError: true

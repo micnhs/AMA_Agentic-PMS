@@ -1,0 +1,29 @@
+{
+  "version": "2026-11-10",
+  "date": "2026-11-10",
+  "currency": "USD",
+  "unit": "USD per 1M tokens",
+  "source": "Azure pricing page for Azure OpenAI models in Microsoft Foundry, Data Zone Standard deployment prices, read 10 Nov 2026 (concept section 14, ADR-002)",
+  "deployment_type": "Data Zone Standard (EU)",
+  "notes": [
+    "EU Data Zone price factor for the GPT-6 family is unconfirmed (OI-031); confirm before deployment.",
+    "The Retail Prices API was not reachable from the build workspace (OI-017); prices are list prices of the pricing page.",
+    "cached_input is null where the price is not known; cached tokens are then charged at the input price (conservative)."
+  ],
+  "models": {
+    "gpt-6-astra": {
+      "input": 11.00,
+      "cached_input": null,
+      "output": 55.00,
+      "model_version": "2026-09-03",
+      "agents": ["A3", "A6"]
+    },
+    "gpt-6.1-sol": {
+      "input": 2.20,
+      "cached_input": null,
+      "output": 11.00,
+      "model_version": "2026-09-29",
+      "agents": ["A1", "A2", "A4"]
+    }
+  }
+}

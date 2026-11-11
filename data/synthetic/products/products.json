@@ -1,0 +1,173 @@
+{
+  "demo-cardio-b": {
+    "name_en": "Fictivia CB Aortic Bioprosthesis (fictional)",
+    "name_de": "Fictivia CB Aortenbioprothese (fiktiv)",
+    "manufacturer": "Fictivia Medical Ltd. (fiktiv / fictional)",
+    "models": [
+      {
+        "model": "CB-21",
+        "size_mm": 21,
+        "udi_di": "00499001000216"
+      },
+      {
+        "model": "CB-23",
+        "size_mm": 23,
+        "udi_di": "00499001000230"
+      },
+      {
+        "model": "CB-25",
+        "size_mm": 25,
+        "udi_di": "00499001000254"
+      }
+    ],
+    "known_side_effects": [
+      {
+        "id": "CV-01",
+        "text_en": "Structural valve deterioration (calcification, leaflet tear or perforation); typically after more than 5 years",
+        "frequency": "fictional 0.5-1% per patient-year"
+      },
+      {
+        "id": "CV-02",
+        "text_en": "Valve thrombosis",
+        "frequency": "fictional < 1%"
+      },
+      {
+        "id": "CV-03",
+        "text_en": "Thromboembolism / stroke",
+        "frequency": "fictional 1-2% per patient-year"
+      },
+      {
+        "id": "CV-04",
+        "text_en": "Prosthetic valve endocarditis",
+        "frequency": "fictional 0.5% per patient-year"
+      },
+      {
+        "id": "CV-05",
+        "text_en": "Paravalvular leak",
+        "frequency": "fictional < 2%"
+      },
+      {
+        "id": "CV-06",
+        "text_en": "Haemolysis",
+        "frequency": "rare (fictional)"
+      },
+      {
+        "id": "CV-07",
+        "text_en": "Bleeding on anticoagulation",
+        "frequency": "fictional 1% per patient-year"
+      },
+      {
+        "id": "CV-08",
+        "text_en": "Conduction disturbance / pacemaker implantation",
+        "frequency": "fictional 3%"
+      },
+      {
+        "id": "CV-09",
+        "text_en": "Reintervention or explantation; death as a consequence of the events above",
+        "frequency": "not quantified (fictional)"
+      }
+    ]
+  },
+  "demo-ortho-a": {
+    "name_en": "Fictivia OA Hip System (fictional)",
+    "name_de": "Fictivia OA Hüftsystem (fiktiv)",
+    "manufacturer": "Fictivia Medical Ltd. (fiktiv / fictional)",
+    "models": [
+      {
+        "model": "OA-S5 (Schaft Gr. 5)",
+        "udi_di": "00499002100052"
+      },
+      {
+        "model": "OA-H32 (Keramikkopf 32 mm)",
+        "udi_di": "00499002200325"
+      },
+      {
+        "model": "OA-H36 (Keramikkopf 36 mm)",
+        "udi_di": "00499002200363"
+      },
+      {
+        "model": "OA-C52 (Pfannenschale 52 mm)",
+        "udi_di": "00499002300520"
+      },
+      {
+        "model": "OA-C54 (Pfannenschale 54 mm)",
+        "udi_di": "00499002300544"
+      },
+      {
+        "model": "OA-L36 (PE-Inlay 36 mm)",
+        "udi_di": "00499002400367"
+      },
+      {
+        "model": "OA-K36 (Keramik-Inlay 36 mm)",
+        "udi_di": "00499002500364"
+      }
+    ],
+    "known_side_effects": [
+      {
+        "id": "OR-01",
+        "text_en": "Dislocation / instability",
+        "frequency": "fictional 1-2%"
+      },
+      {
+        "id": "OR-02",
+        "text_en": "Periprosthetic fracture",
+        "frequency": "fictional < 1%"
+      },
+      {
+        "id": "OR-03",
+        "text_en": "Infection",
+        "frequency": "fictional < 1%"
+      },
+      {
+        "id": "OR-04",
+        "text_en": "Aseptic loosening / migration",
+        "frequency": "fictional 1-3% at 10 years"
+      },
+      {
+        "id": "OR-05",
+        "text_en": "Thigh pain",
+        "frequency": "fictional 2%"
+      },
+      {
+        "id": "OR-06",
+        "text_en": "Leg length discrepancy",
+        "frequency": "not quantified (fictional)"
+      },
+      {
+        "id": "OR-07",
+        "text_en": "Heterotopic ossification",
+        "frequency": "fictional 5%"
+      },
+      {
+        "id": "OR-08",
+        "text_en": "Nerve or vessel injury",
+        "frequency": "rare (fictional)"
+      },
+      {
+        "id": "OR-09",
+        "text_en": "Deep vein thrombosis / pulmonary embolism (procedure-related)",
+        "frequency": "fictional 1%"
+      },
+      {
+        "id": "OR-10",
+        "text_en": "Wear / osteolysis",
+        "frequency": "not quantified (fictional)"
+      },
+      {
+        "id": "OR-11",
+        "text_en": "Noise (squeaking) with ceramic-on-ceramic bearings",
+        "frequency": "fictional < 1%"
+      },
+      {
+        "id": "OR-12",
+        "text_en": "Fracture of implant components (ceramic head, stem)",
+        "frequency": "rare, fictional < 0.1%"
+      },
+      {
+        "id": "OR-13",
+        "text_en": "Material or metal sensitivity",
+        "frequency": "rare (fictional)"
+      }
+    ]
+  }
+}

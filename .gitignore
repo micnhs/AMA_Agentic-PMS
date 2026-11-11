@@ -1,0 +1,25 @@
+# Local runtime data (SQLite databases, outbox, logs, golden summaries)
+var/
+outbox/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Azure smoke-test output (Gate C evidence is copied out deliberately)
+smoke-test-result.json
+
+# Azure Developer CLI environments (hold deployment outputs; never commit)
+.azure/
+
+# Local secrets files must never be committed
+.env
+.env.*
+
+# CI and test artifacts
+artifacts/
+playwright-report/
+test-results/
+.pytest_cache/
+.ruff_cache/

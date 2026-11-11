@@ -1,0 +1,23 @@
+{
+  "_comment": "Built-in role and policy definition IDs used by infra/ (Azure built-in roles and policy reference). scripts/preflight.* checks that every ID exists in the tenant and carries the expected name before provisioning.",
+  "azureRbac": {
+    "azureAiUser": { "name": "Azure AI User", "id": "53ca6127-db72-4b80-b1b0-d745d6d5456d" },
+    "searchIndexDataReader": { "name": "Search Index Data Reader", "id": "1407120a-92aa-4202-b7e9-c0e197c71c8f" },
+    "searchIndexDataContributor": { "name": "Search Index Data Contributor", "id": "8ebe5a00-799e-43f5-93ac-243d3dce84a7" },
+    "searchServiceContributor": { "name": "Search Service Contributor", "id": "7ca78c08-252a-4471-8644-bb5ff32d4ba0" },
+    "storageBlobDataContributor": { "name": "Storage Blob Data Contributor", "id": "ba92f5b4-2d11-453d-a403-e96b0029c9fe" },
+    "storageBlobDataReader": { "name": "Storage Blob Data Reader", "id": "2a2b9908-6ea1-4ae2-8e65-a410df84e7d1" },
+    "acrPull": { "name": "AcrPull", "id": "7f951dda-4ed3-4680-a7ca-43fe172d538d" },
+    "costManagementReader": { "name": "Cost Management Reader", "id": "72fafb9e-0641-4937-9268-a91bfd8191a3" },
+    "monitoringMetricsPublisher": { "name": "Monitoring Metrics Publisher", "id": "3913510d-42f4-4e42-8a64-420c390055eb" },
+    "keyVaultSecretsUser": { "name": "Key Vault Secrets User", "id": "4633458b-17de-408a-b874-0445c86b69e6" }
+  },
+  "policyDefinitions": {
+    "allowedLocations": { "name": "Allowed locations", "id": "e56962a6-4747-49cd-b67b-bf8b01975c4c" },
+    "requireTagOnResources": { "name": "Require a tag on resources", "id": "871b6d14-10aa-478d-b590-94f262ecfa99" }
+  },
+  "cosmosDataPlane": {
+    "dataReader": { "name": "Cosmos DB Built-in Data Reader", "id": "00000000-0000-0000-0000-000000000001" },
+    "dataContributor": { "name": "Cosmos DB Built-in Data Contributor", "id": "00000000-0000-0000-0000-000000000002" }
+  }
+}

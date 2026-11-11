@@ -1,0 +1,7 @@
+# Developer and CI tools (exact pins). Not needed for the offline demo or the local tests.
+-r requirements.txt
+pytest==9.0.3
+ruff==0.6.9
+playwright==1.48.0
+PyYAML==6.0.3
+reportlab==5.1.0

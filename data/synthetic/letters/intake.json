@@ -1,0 +1,91 @@
+{
+  "description": "Intake register of the 12 synthetic demo letters: intake reference, file, receipt time (UTC) and channel. INPUT metadata used by the seed command (copied from the golden-set letter metadata on 10 Nov 2026); these are not labels. The runtime never reads expected.json.",
+  "synthetic": true,
+  "golden_set_version": "1.0",
+  "letters": [
+    {
+      "ref": "L01",
+      "filename": "L01_de_cardio_death.txt",
+      "pdf_filename": "L01_de_cardio_death.pdf",
+      "received_at": "2026-11-16T08:15:00Z",
+      "channel": "letter upload"
+    },
+    {
+      "ref": "L02",
+      "filename": "L02_en_ortho_death_gb.txt",
+      "pdf_filename": "L02_en_ortho_death_gb.pdf",
+      "received_at": "2026-11-16T09:30:00Z",
+      "channel": "letter upload"
+    },
+    {
+      "ref": "L03",
+      "filename": "L03_en_cardio_pht_ie.txt",
+      "pdf_filename": "L03_en_cardio_pht_ie.pdf",
+      "received_at": "2026-11-16T10:05:00Z",
+      "channel": "letter upload"
+    },
+    {
+      "ref": "L04",
+      "filename": "L04_en_ortho_unexpected_ni.txt",
+      "pdf_filename": "L04_en_ortho_unexpected_ni.pdf",
+      "received_at": "2026-11-16T11:20:00Z",
+      "channel": "letter upload"
+    },
+    {
+      "ref": "L05",
+      "filename": "L05_fr_cardio_known_side_effect.txt",
+      "pdf_filename": "L05_fr_cardio_known_side_effect.pdf",
+      "received_at": "2026-11-16T13:40:00Z",
+      "channel": "letter upload"
+    },
+    {
+      "ref": "L06",
+      "filename": "L06_it_ortho_minor.txt",
+      "pdf_filename": "L06_it_ortho_minor.pdf",
+      "received_at": "2026-11-16T14:55:00Z",
+      "channel": "letter upload"
+    },
+    {
+      "ref": "L07",
+      "filename": "L07_de_cardio_unrelated.txt",
+      "pdf_filename": "L07_de_cardio_unrelated.pdf",
+      "received_at": "2026-11-17T08:10:00Z",
+      "channel": "letter upload"
+    },
+    {
+      "ref": "L08",
+      "filename": "L08_en_ortho_gb_ni_unclear.txt",
+      "pdf_filename": "L08_en_ortho_gb_ni_unclear.pdf",
+      "received_at": "2026-11-17T09:45:00Z",
+      "channel": "letter upload"
+    },
+    {
+      "ref": "L09",
+      "filename": "L09_de_ortho_incomplete.txt",
+      "pdf_filename": "L09_de_ortho_incomplete.pdf",
+      "received_at": "2026-11-17T11:00:00Z",
+      "channel": "letter upload"
+    },
+    {
+      "ref": "L10",
+      "filename": "L10_de_ortho_followup.txt",
+      "pdf_filename": "L10_de_ortho_followup.pdf",
+      "received_at": "2026-11-23T09:00:00Z",
+      "channel": "letter upload"
+    },
+    {
+      "ref": "L11",
+      "filename": "L11_de_ortho_lot_udi_mismatch.txt",
+      "pdf_filename": "L11_de_ortho_lot_udi_mismatch.pdf",
+      "received_at": "2026-11-18T10:30:00Z",
+      "channel": "letter upload"
+    },
+    {
+      "ref": "L12",
+      "filename": "L12_en_ortho_death_gb_injection.txt",
+      "pdf_filename": "L12_en_ortho_death_gb_injection.pdf",
+      "received_at": "2026-11-18T15:00:00Z",
+      "channel": "letter upload"
+    }
+  ]
+}

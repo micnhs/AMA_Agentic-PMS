@@ -1,0 +1,114 @@
+# Documented deviations of the demo baseline from Well-Architected production recommendations
+# (concept 6.11, ADR-011, K-21, OI-037). Each suppression group states its reason in the Synopsis.
+# Options with extra cost need Michael's approval as a paid service before they are enabled.
+
+---
+# Synopsis: Public endpoints protected by Microsoft Entra ID and managed identities instead of private networking. Private endpoints and VNet integration add cost and setup effort for a self-deployed demo with synthetic data only (concept 6.11, OI-037).
+apiVersion: github.com/microsoft/PSRule/v1
+kind: SuppressionGroup
+metadata:
+  name: PMS.Deviation.PublicEndpoints
+spec:
+  rule:
+    - Azure.ContainerApp.PublicAccess
+    - Azure.Cognitive.PublicAccess
+    - Azure.Cognitive.PrivateEndpoints
+    - Azure.Cosmos.PublicAccess
+    - Azure.Search.PublicAccess
+    - Azure.Storage.Firewall
+    - Azure.ACR.Firewall
+  if:
+    type: "."
+    in:
+      - Microsoft.App/managedEnvironments
+      - Microsoft.CognitiveServices/accounts
+      - Microsoft.DocumentDB/databaseAccounts
+      - Microsoft.Search/searchServices
+      - Microsoft.Storage/storageAccounts
+      - Microsoft.ContainerRegistry/registries
+
+---
+# Synopsis: No zone redundancy and no second region. The demo runs in one EU region by design (concept 3.4) and zone redundancy adds cost; Standard_ZRS storage is available as a low-cost parameter (concept 6.11, OI-037).
+apiVersion: github.com/microsoft/PSRule/v1
+kind: SuppressionGroup
+metadata:
+  name: PMS.Deviation.ZoneAndGeoRedundancy
+spec:
+  rule:
+    - Azure.ContainerApp.AvailabilityZone
+    - Azure.Cosmos.AvailabilityZone
+    - Azure.Storage.UseReplication
+    - Azure.ACR.GeoReplica
+    - Azure.ACR.ZoneRedundancy
+  if:
+    type: "."
+    in:
+      - Microsoft.App/managedEnvironments
+      - Microsoft.DocumentDB/databaseAccounts
+      - Microsoft.Storage/storageAccounts
+      - Microsoft.ContainerRegistry/registries
+
+---
+# Synopsis: Azure AI Search runs one Basic search unit without the replicas required for the query and indexing SLA. Basic is the approved default and already the largest fixed cost item (ADR-007, OI-035); the demo has no availability target.
+apiVersion: github.com/microsoft/PSRule/v1
+kind: SuppressionGroup
+metadata:
+  name: PMS.Deviation.SearchSla
+spec:
+  rule:
+    - Azure.Search.QuerySLA
+    - Azure.Search.IndexSLA
+  if:
+    type: "."
+    equals: Microsoft.Search/searchServices
+
+---
+# Synopsis: Azure Container Registry Basic was approved by Michael on 10 Nov 2026 (decision Q-6). Premium-only features (retention, content trust, quarantine) are not needed for one demo image.
+apiVersion: github.com/microsoft/PSRule/v1
+kind: SuppressionGroup
+metadata:
+  name: PMS.Deviation.RegistryBasic
+spec:
+  rule:
+    - Azure.ACR.MinSku
+    - Azure.ACR.Retention
+    - Azure.ACR.ContentTrust
+    - Azure.ACR.Quarantine
+  if:
+    type: "."
+    equals: Microsoft.ContainerRegistry/registries
+
+---
+# Synopsis: Microsoft Defender for Cloud plans are subscription-wide paid services and are not enabled by the demo (concept 6.11, OI-037). Deployers can enable them in their subscription.
+apiVersion: github.com/microsoft/PSRule/v1
+kind: SuppressionGroup
+metadata:
+  name: PMS.Deviation.DefenderPlans
+spec:
+  rule:
+    - Azure.ACR.ContainerScan
+    - Azure.Cosmos.DefenderCloud
+    - Azure.Storage.DefenderCloud
+    - Azure.Storage.DefenderCloud.MalwareScan
+    - Azure.Storage.DefenderCloud.SensitiveData
+    - Azure.KeyVault.DefenderCloud
+  if:
+    type: "."
+    in:
+      - Microsoft.ContainerRegistry/registries
+      - Microsoft.DocumentDB/databaseAccounts
+      - Microsoft.Storage/storageAccounts
+      - Microsoft.KeyVault/vaults
+
+---
+# Synopsis: The web app scales to zero and the alert worker runs exactly one replica on purpose: a single worker avoids duplicate alert e-mails and keeps the 60-second alert target at minimal cost (concept 6.9, 14). No availability SLA is claimed for the demo.
+apiVersion: github.com/microsoft/PSRule/v1
+kind: SuppressionGroup
+metadata:
+  name: PMS.Deviation.ReplicaCount
+spec:
+  rule:
+    - Azure.ContainerApp.MinReplicas
+  if:
+    type: "."
+    equals: Microsoft.App/containerApps
