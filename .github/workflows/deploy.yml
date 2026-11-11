@@ -41,7 +41,7 @@ jobs:
       MODEL_FALLBACK_ALL_GENERAL: ${{ vars.MODEL_FALLBACK_ALL_GENERAL }}
     steps:
       - name: Check out
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7.0.1
       - name: Set up Python
         uses: actions/setup-python@v5.3.0
         with:

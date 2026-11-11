@@ -27,7 +27,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Check out
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7.0.1
       - name: Set up Python
         uses: actions/setup-python@v5.3.0
         with:
@@ -66,7 +66,7 @@ jobs:
       AGENT_BACKEND: offline
     steps:
       - name: Check out
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7.0.1
       - name: Set up Python
         uses: actions/setup-python@v5.3.0
         with:
@@ -100,7 +100,7 @@ jobs:
       SCREENSHOT_DIR: artifacts/screenshots
     steps:
       - name: Check out
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7.0.1
       - name: Set up Python
         uses: actions/setup-python@v5.3.0
         with:
@@ -149,7 +149,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Check out
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7.0.1
       - name: Install the Bicep CLI
         run: |
           az bicep install
@@ -171,7 +171,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Check out
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7.0.1
       - name: Install the Bicep CLI (PSRule expands the Bicep files with it)
         run: |
           az bicep install
@@ -201,7 +201,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Check out
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v7.0.1
       - name: Set up Python
         uses: actions/setup-python@v5.3.0
         with:
