@@ -177,6 +177,7 @@ On Windows:
 - Run the PowerShell commands in **PowerShell 7**: type `pwsh` and press Enter (install it once with
   `winget install --id Microsoft.PowerShell --source winget`). The *Windows PowerShell* 5.1 that comes
   with Windows is not supported; the scripts stop at once with a `#requires` message for PowerShell 7.2.
+  Step 2 also shows a direct start with Python that works there.
 - If you unzipped a downloaded zip, Windows marks the files as coming from the internet, and PowerShell
   then asks before every script or blocks it. Unblock the files once, in the repository folder and only
   for a copy from a source you trust: `Get-ChildItem -Recurse -File | Unblock-File`. A `git clone` needs
@@ -195,6 +196,14 @@ PowerShell 7.2 or newer (in `pwsh`, see step 1):
 
 ```powershell
 ./scripts/run-local.ps1
+```
+
+Without bash and without PowerShell 7 – for example in the *Windows PowerShell* 5.1 that comes with
+Windows – start the offline demo directly with Python. This is the command the scripts run; open a new
+terminal for it, so that no Azure settings from an earlier session are set:
+
+```powershell
+$env:PYTHONPATH = "src"; python -m pms serve --seed
 ```
 
 It is ready when it prints `listening on http://127.0.0.1:8000/`. The default port is 8000. If that port
@@ -646,7 +655,7 @@ folder if you no longer need it.
 | Message or symptom | What to do |
 |---|---|
 | `Python 3.12 or newer was not found.` | Install Python 3.12 or newer and open a new terminal. |
-| A `#requires` message for PowerShell 7.2, `PowerShell ... is too old.`, a security warning before each script, or a script blocked by the execution policy | Start PowerShell 7 with `pwsh` (install: `winget install --id Microsoft.PowerShell --source winget`) and run the script there. For a downloaded zip, run `Get-ChildItem -Recurse -File \| Unblock-File` once in the repository folder (only for a copy from a source you trust), or use `git clone`. |
+| A `#requires` message for PowerShell 7.2, `PowerShell ... is too old.`, a security warning before each script, or a script blocked by the execution policy | Start PowerShell 7 with `pwsh` (install: `winget install --id Microsoft.PowerShell --source winget`) and run the script there, or start the demo without the script: `$env:PYTHONPATH = "src"; python -m pms serve --seed`. For a downloaded zip, run `Get-ChildItem -Recurse -File \| Unblock-File` once in the repository folder (only for a copy from a source you trust), or use `git clone`. |
 | The start prints `Port 8000 is in use - using port … instead.`, or stops with "Address already in use" when you passed `--port` | Use the printed URL, or pass a free port: `bash scripts/run-local.sh --port 8765` (PowerShell: `./scripts/run-local.ps1 --port 8765`). |
 | Every page shows *Sign in* / the API answers `401` "not signed in: pick a demo user" | Pick a user on the sign-in page (the browser must accept cookies), or send the header `X-Demo-User: <user>`. |
 | `403` "Refused: ... (your roles: ...)" | The fixed role matrix does not allow this action for the user; the attempt is recorded (`ACCESS_DENIED`). Switch to the right user. |

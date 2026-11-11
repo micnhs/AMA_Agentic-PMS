@@ -37,7 +37,8 @@ class PowerShellScriptTests(unittest.TestCase):
     def test_readme_tells_windows_users_how_to_run_the_scripts(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         quick = readme[readme.index("## Offline quick start"):readme.index("## Deploy to Azure")]
-        for needle in ("pwsh", "winget install --id Microsoft.PowerShell", "Unblock-File", "#requires"):
+        for needle in ("pwsh", "winget install --id Microsoft.PowerShell", "Unblock-File", "#requires",
+                       "python -m pms serve --seed"):
             self.assertIn(needle, quick)
 
 
