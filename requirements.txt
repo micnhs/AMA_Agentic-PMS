@@ -7,7 +7,7 @@ azure-identity==1.27.0
 azure-cosmos==4.17.1
 azure-search-documents==12.0.0
 azure-communication-email==1.1.0
-azure-monitor-opentelemetry==1.8.11
+azure-monitor-opentelemetry==1.8.12
 requests==2.34.2
 pypdf==6.21.4
 gunicorn==23.0.0
