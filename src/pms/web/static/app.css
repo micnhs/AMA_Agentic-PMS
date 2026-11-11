@@ -46,12 +46,15 @@ section.critical-queue { border: 2px solid var(--critical); }
 .counts { display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; list-style: none; padding: 0; margin: 0 0 1rem; }
 .earliest { font-size: 1.05rem; }
 
+.table-wrap { max-width: 100%; overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; margin: 0.3rem 0 0.6rem; font-size: 0.88rem; }
 th, td { border: 1px solid var(--line); padding: 0.3rem 0.45rem; text-align: left; vertical-align: top; }
 th { background: #eef1f4; font-weight: 600; }
 tr.overdue td { background: var(--overdue-bg); }
 tr.driving td { font-weight: 600; }
 td.step { white-space: nowrap; }
+td.before, td.after, td.versions { overflow-wrap: anywhere; }
+td.countdown-cell .countdown.overdue { white-space: normal; }
 .step-done { color: var(--ok); }
 .step-running { color: var(--accent); font-weight: 600; }
 .step-failed { color: var(--critical); font-weight: 600; }

@@ -56,7 +56,8 @@ from .rules.engine import RuleEngine
 from .telemetry import AUDIT_VERIFY_INTERVAL_S, HEARTBEAT_INTERVAL_S, Telemetry
 from .versions import ALL_RULE_VERSIONS, DL, RS, manifest
 from .workflow import (
-    ANALYSIS_DONE, ANALYSIS_FAILED, ANALYSIS_RUNNING, TASK_UNMATCHED, TASK_UNREADABLE, Action, Workflow,
+    ANALYSIS_DONE, ANALYSIS_FAILED, ANALYSIS_PENDING, ANALYSIS_RUNNING, TASK_UNMATCHED, TASK_UNREADABLE, Action,
+    Workflow,
 )
 
 log = logging.getLogger("pms.pipeline")
@@ -866,11 +867,24 @@ class Pipeline:
                                  reason=f"re-analysis requested by {actor.actor_id}")
 
     # ------------------------------------------------------------------ views for the web layer
+    def analysis_state_of(self, case: Case, jobs: list[Job] | None = None) -> str:
+        """The analysis state people and API clients see. The stored state belongs to the last job the worker
+        touched; a job of the case that is still queued or running (a new signal, a re-analysis) wins, so a case
+        never shows DONE while the analysis of its newest signal is pending."""
+        if jobs is None:
+            jobs = self.jobs.list(case_id=case.case_id)
+        open_states = {j.status for j in jobs if j.status in ("QUEUED", "RUNNING")}
+        if "RUNNING" in open_states:
+            return ANALYSIS_RUNNING
+        if open_states:
+            return ANALYSIS_PENDING
+        return case.analysis_state
+
     def case_progress(self, case_id: str) -> dict[str, Any]:
         jobs = self.jobs.list(case_id=case_id)
         case = self.store.get_case(case_id)
         latest = jobs[-1] if jobs else None
-        return {"analysis_state": case.analysis_state, "jobs": len(jobs),
+        return {"analysis_state": self.analysis_state_of(case, jobs), "jobs": len(jobs),
                 "latest_job": None if latest is None else {
                     "job_id": latest.job_id, "signal_id": latest.signal_id, "status": latest.status,
                     "reason": latest.reason, "rounds": latest.rounds, "error": latest.error,
@@ -943,11 +957,15 @@ class Pipeline:
         signals = self.store.list_signals(case_id)
         runs = self.store.list_agent_runs(case_id)
         rec = self.store.latest_recommendation(case_id)
+        progress = self.case_progress(case_id)
         return {
-            "case": {**asdict(case), "status_label": STATUS_LABELS_EN.get(Status(case.status), case.status)},
+            "case": {**asdict(case), "analysis_state": progress["analysis_state"],
+                     "status_label": STATUS_LABELS_EN.get(Status(case.status), case.status)},
             "signals": [{**self._signal_brief(s), "filename": s.filename, "text": s.text,
                          "text_sha256": s.text_sha256, "registry": s.registry, "injection": s.injection,
-                         "crit": {"severity": s.crit.get("severity"), "groups": s.crit.get("groups")},
+                         "crit": {"severity": s.crit.get("severity"), "groups": s.crit.get("groups"),
+                                  "indicators": [{"group": i.get("group"), "match": i.get("match"),
+                                                  "line": i.get("line")} for i in s.crit.get("indicators") or []]},
                          "completeness": s.completeness, "deadline_not_reset": s.deadline_not_reset,
                          "link": s.link} for s in signals],
             "originals": self.stored_originals(case_id),
@@ -968,7 +986,7 @@ class Pipeline:
             "approvals": [asdict(a) for a in self.store.list_approvals(case_id)],
             "submissions": [asdict(s) for s in self.store.list_submissions(case_id)],
             "metadata_edits": [asdict(e) for e in self.store.list_metadata_edits(case_id)],
-            "progress": self.case_progress(case_id),
+            "progress": progress,
             "audit": self.store.audit.records(case_id=case_id),
         }
 

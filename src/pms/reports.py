@@ -167,7 +167,7 @@ def build_case_report(pipeline: Any, case_id: str, *, now: _dt.datetime | None =
                  "authority_labels": case.authority_labels, "authority_note": "labels only - nothing is sent",
                  "route_unverified": case.route_unverified, "rs_notes": case.rs_notes,
                  "awareness_anchor": case.awareness_anchor, "anchor_ref": case.anchor_ref,
-                 "analysis_state": case.analysis_state, "content_version": case.content_version,
+                 "analysis_state": pipeline.analysis_state_of(case), "content_version": case.content_version,
                  "content_hash": workflow.content_hash(case_id), "urgency": case.urgency,
                  "metadata": case.metadata, "created_at": case.created_at, "updated_at": case.updated_at},
         "signals": signal_rows,

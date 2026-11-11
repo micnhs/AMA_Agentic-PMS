@@ -332,6 +332,10 @@ class RuleEngine:
             labels.append(rulesets.authority_for_state(state)[0])
             if state not in states:
                 states.append(state)
+        if rulesets.UNRESOLVED_RULE_SET not in rule_sets:
+            # The "state unknown" note belongs to the UNRESOLVED placeholder: a signal without location evidence
+            # leaves a resolved case resolved, so the case carries no such note either.
+            notes = [n for n in notes if n != rulesets.UNRESOLVED_NOTE]
         route_unverified = any(rulesets.authority_for_state(st)[1] for st in states)
         family = case.product_family
         if family is None:

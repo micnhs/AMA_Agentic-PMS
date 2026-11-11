@@ -458,13 +458,18 @@ def _summary(case: dict[str, Any], view: dict[str, Any], report: dict[str, Any])
         ("Rule sets (RS-1.0)", ", ".join(case.get("rule_sets") or [])),
         ("Authority labels", join("; ".join(case.get("authority_labels") or []) or None,
                                   el("small", " (labels only - nothing is sent)"))),
-        ("Route unverified", join(route, el("ul", [el("li", n) for n in case.get("rs_notes") or []])
-                                  if case.get("rs_notes") else None)),
+        ("Route unverified", route),
         ("Incident states", ", ".join(case.get("incident_states") or [])),
+        ("Rule-set notes (RS-1.0)", el("ul", [el("li", n) for n in case.get("rs_notes") or []], id="rs-notes")
+         if case.get("rs_notes") else "none"),
         ("Awareness anchor (first receipt)", join(case.get("awareness_anchor") or "unknown",
                                                   f" (signal {case.get('anchor_ref')})" if case.get("anchor_ref")
                                                   else "")),
-        ("Analysis", case.get("analysis_state")),
+        ("Analysis", join(el("span", case.get("analysis_state"), id="analysis-summary"),
+                          el("small", " - a new analysis is queued or running; the drafts below are from the "
+                                      "previous run until it finishes")
+                          if case.get("analysis_state") in ("PENDING", "RUNNING") and view.get("recommendation")
+                          else None)),
         ("Content version", join(str(case.get("content_version")), " - hash ",
                                  el("code", (report.get("case") or {}).get("content_hash", "")[:16] + "…"))),
         ("Approval", approval),
@@ -659,6 +664,14 @@ def _relation(signal: dict[str, Any]) -> str:
     return text
 
 
+def _crit_text(crit: dict[str, Any]) -> Markup:
+    """Severity, then each matched term with its group and line (the words that made the signal critical)."""
+    matched = [f"{i.get('group')}: '{i.get('match')}' (line {i.get('line')})" for i in crit.get("indicators") or []]
+    if not matched:
+        matched = list(crit.get("groups") or [])
+    return join(crit.get("severity") or "unknown", " - matched: " + "; ".join(matched) if matched else None)
+
+
 def _signals(view: dict[str, Any]) -> Markup:
     articles = []
     signals = view.get("signals") or []
@@ -674,8 +687,7 @@ def _signals(view: dict[str, Any]) -> Markup:
             ("File", s.get("filename")),
             ("Language", s.get("language")),
             ("Readable", yes_no(s.get("readable"))),
-            ("Critical indicators (CRIT-1.0)", join(crit.get("severity"), " ",
-                                                    ", ".join(crit.get("groups") or []))),
+            ("Critical indicators (CRIT-1.0)", _crit_text(crit)),
             ("Registry check (REG-1.0)", reg.get("value") or reg.get("status")),
             ("Injection flag (INJ-1.0)", el("strong", "FLAGGED - the marked paragraph is withheld from the agents",
                                              class_="flag") if inj.get("flag") else "no"),
@@ -830,7 +842,8 @@ def _correlation(report: dict[str, Any], findings: list[dict[str, Any]]) -> Mark
               empty="Not run yet."),
         el("h3", "A6 correlation ", draft_label()),
         table(["Relation", "Source ID", "Statement", "Quote", "Quote check"], agent_rows, id="corr-agent",
-              empty="No A6 draft yet."),
+              empty=("A6 ran and named no correlation for this case - this is not an all-clear." if agent
+                     else "No A6 draft yet.")),
         el("p", "Contradictions: ", "; ".join(str(c.get("statement")) for c in agent.get("contradictions") or [])
            or "none listed", class_="hint") if agent else None,
         el("p", "Open questions: ", "; ".join(str(q) for q in agent.get("open_questions") or []) or "none listed",
@@ -927,7 +940,8 @@ def audit_table(records: list[dict[str, Any]], table_id: str) -> Markup:
                      case_link(r["case_id"]) if r.get("case_id") else "",
                      Markup(el("td", json_text(r.get("before")), class_="before")),
                      Markup(el("td", json_text(r.get("after")), class_="after")),
-                     Markup(el("td", r.get("reason") or "", class_="reason")), ", ".join(versions)])
+                     Markup(el("td", r.get("reason") or "", class_="reason")),
+                     Markup(el("td", ", ".join(versions), class_="versions"))])
         attributes.append({"class_": "audit-row", "data_event": r.get("event_type"), "data_seq": r.get("seq")})
     return table(["Seq", "Time (UTC)", "Event", "Actor type", "Actor", "Source", "Case", "Before", "After", "Reason",
                   "Versions"], rows, row_attrs=attributes, id=table_id, empty="No audit record.")

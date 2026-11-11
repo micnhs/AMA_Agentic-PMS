@@ -5,7 +5,8 @@ offline demo (CI starts ``python -m pms serve --seed``); without it the test sta
 on a free port. Screenshots go to ``SCREENSHOT_DIR`` (default ``artifacts/screenshots``):
 
 01-dashboard.png, 02-critical-case.png, 03-rejected-view.png, 04-case-after-adding-a-signal.png,
-05-metadata-edit.png - synthetic data only.
+05-metadata-edit.png - synthetic data only. After each full-page screenshot the test checks that the page is not
+wider than the browser window (wide tables scroll inside their panel).
 """
 from __future__ import annotations
 
@@ -81,6 +82,11 @@ class BrowserScreenshots(unittest.TestCase):
         if not page.locator(f"#action-{key}[open]").count():
             page.click(f"#action-{key} > summary")
 
+    def assert_fits_the_window(self, page: Any) -> None:
+        """No sideways scrolling of the page: wide tables scroll inside their panel (screenshot review, cycle 13)."""
+        scroll_width, window_width = page.evaluate("() => [document.documentElement.scrollWidth, window.innerWidth]")
+        self.assertLessEqual(scroll_width, window_width, "the page is wider than the browser window")
+
     def shot(self, page: Any, name: str, *, selector: str | None = None) -> Path:
         path = self.shots / name
         if selector:
@@ -101,6 +107,7 @@ class BrowserScreenshots(unittest.TestCase):
         self.assertNotEqual(page.inner_text("#earliest-countdown"), first, "the countdown runs in the browser")
         self.assertGreater(page.locator("tr.case-row td[data-step='A3']").count(), 0)
         self.shot(page, "01-dashboard.png")
+        self.assert_fits_the_window(page)
 
     def test_2_critical_case(self) -> None:
         page = self.signed_in("reviewer")
@@ -108,6 +115,7 @@ class BrowserScreenshots(unittest.TestCase):
         page.wait_for_selector("#signals pre.letter-text")
         self.assertIn("Draft", page.inner_text("#recommendation"))
         self.shot(page, "02-critical-case.png")
+        self.assert_fits_the_window(page)
 
     def test_3_rejected_view(self) -> None:
         progress = self.wait_for_analysis("CASE-L06")
@@ -131,6 +139,7 @@ class BrowserScreenshots(unittest.TestCase):
         row = page.locator("tr.rejected-row[data-case-id='CASE-L06']")
         self.assertEqual(row.get_attribute("data-reason-code"), "R2")
         self.shot(page, "03-rejected-view.png")
+        self.assert_fits_the_window(page)
 
     def test_4_case_after_adding_a_signal(self) -> None:
         page = self.signed_in("analyst")
@@ -146,6 +155,7 @@ class BrowserScreenshots(unittest.TestCase):
         self.assertEqual(page.locator("#signals article.signal").count(), before + 1)
         page.locator("#signals article.signal").last.scroll_into_view_if_needed()
         self.shot(page, "04-case-after-adding-a-signal.png")
+        self.assert_fits_the_window(page)
 
     def test_5_metadata_edit_with_reason(self) -> None:
         page = self.signed_in("analyst")

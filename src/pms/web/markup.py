@@ -88,7 +88,10 @@ def json_text(value: Any, limit: int | None = 400) -> str:
 
 def table(headers: list[Any], rows: list[list[Any]], *, empty: str = "None.", row_attrs: list[dict[str, Any]] | None
           = None, **attributes: Any) -> Markup:
-    """A table with a header row; ``row_attrs`` gives per-row attributes (class, data-*)."""
+    """A table with a header row; ``row_attrs`` gives per-row attributes (class, data-*).
+
+    The table sits in a ``div.table-wrap`` that scrolls sideways when the table is wider than its panel, so a wide
+    table never widens the page or runs across the panel border."""
     if not rows:
         return el("p", empty, class_="empty")
     head = el("thead", el("tr", [el("th", h, scope="col") for h in headers]))
@@ -97,7 +100,7 @@ def table(headers: list[Any], rows: list[list[Any]], *, empty: str = "None.", ro
         extra = (row_attrs[index] if row_attrs and index < len(row_attrs) else {}) or {}
         body_rows.append(el("tr", [c if isinstance(c, Markup) and c.startswith("<td") else el("td", c) for c in row],
                             **extra))
-    return el("table", head, el("tbody", body_rows), **attributes)
+    return el("div", el("table", head, el("tbody", body_rows), **attributes), class_="table-wrap")
 
 
 def dl(items: list[tuple[Any, Any]], **attributes: Any) -> Markup:

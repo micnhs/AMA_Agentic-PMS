@@ -590,7 +590,9 @@ your uploaded case as a duplicate and, like every critical letter, gets its own 
 - L11: a registry mismatch; *Unreadable & unmatched* lists inputs that could not be matched;
 - L12, a copy of L02 with an injected instruction: same labels, a visible flag, linked as a duplicate;
   its alert says that the embedded instructions were ignored and withheld from the agents;
-- the seed cases appear overdue because their receipt dates are in September 2026.
+- the seed cases appear overdue because their receipt dates are in September 2026; the 12 letters keep
+  their receipt dates of 16–20 November 2026, so before 16 November their countdowns are longer than the
+  deadline and after early December they are overdue (OI-046).
 
 ## Cost estimate (as of 10 Nov 2026)
 
@@ -781,6 +783,13 @@ extra cost need the project owner's approval, OI-037):
 - **Audit trail:** tamper-evident, not tamper-proof. An owner of the subscription (or of the local
   database file) can still delete resources or the whole store.
 - **Seeds appear overdue:** the six seed messages keep their September 2026 receipt times (OI-018).
+- **Letters carry fixed receipt times (16–20 November 2026, golden set 1.0):** *Load demo data* keeps them
+  (OI-046). Loaded before 16 November 2026, the letters are received "in the future": their countdowns are
+  longer than the deadline (for example 15 days left on a 10-day deadline), and a signal you add now becomes the
+  earliest receipt of its case, so the anchor and every deadline of that case move earlier (DL-1.0: the anchor
+  is the earliest receipt; a deadline never moves later). Loaded after early December 2026, every letter case is
+  overdue. The golden run uses its own fixed demo clock (A-09) and is not affected. For a story in real time,
+  use the presenter script: the uploaded letter is received now.
 - **Knowledge corpus:** all literature, past cases and technical documents are invented and labelled
   fictional; the search has no internet access. A correlation is no proof of causality, and "no hits"
   is no all-clear.
@@ -821,7 +830,7 @@ python3 scripts/secret_scan.py
 python3 scripts/validate_workflows.py --no-pyyaml
 ```
 
-About 300 tests (unit, golden, authorization, UI and safety); the Azure adapters are tested against fake
+About 340 tests (unit, golden, authorization, UI and safety); the Azure adapters are tested against fake
 SDKs, so nothing needs Azure. The browser tests in `tests/ui/playwright/` are skipped when Playwright is
 not installed.
 

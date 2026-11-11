@@ -53,6 +53,7 @@ _AUTHORITY: dict[str, tuple[str, bool]] = {
     "NI": ("NI MHRA, MORE portal, EU form", False),  # RA-P5, RA-P13, SCN-GBNI
 }
 UNRESOLVED_AUTHORITY = "Incident state unresolved - a human must confirm the authority (route unverified)"
+UNRESOLVED_NOTE = "Incident state unknown: deadlines are tracked provisionally; a human must confirm the state."
 
 # Bases of the incident-state decision (A-07 order).
 LETTER_UNCERTAIN = "LETTER_UNCERTAIN"
@@ -196,6 +197,6 @@ def assign(extraction: Extraction | None, registry_entries: Sequence[RegistryEnt
         if note:
             notes.append(note)
     if basis == UNRESOLVED:
-        notes.append("Incident state unknown: deadlines are tracked provisionally; a human must confirm the state.")
+        notes.append(UNRESOLVED_NOTE)
     return RuleSetAssignment(tuple(states), basis, tuple(rule_sets), tuple(labels), unverified,
                              tuple(notes), tuple(evidence))

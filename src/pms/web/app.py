@@ -214,6 +214,7 @@ class WebApp:
 
     def _case_json(self, case: Any) -> dict[str, Any]:
         data = _plain(case)
+        data["analysis_state"] = self.pipeline.analysis_state_of(case)  # a queued or running job wins (pipeline)
         try:
             data["status_label"] = STATUS_LABELS_EN[Status(data["status"])]
         except (KeyError, ValueError):
@@ -411,10 +412,11 @@ class WebApp:
         self._require(request, case_id=case_id)
         case = self._case(request, case_id)
         data = self._case_json(case)
+        progress = self.pipeline.case_progress(case_id)
         return Response.json({"case_id": case.case_id, "status": case.status, "status_label": data["status_label"],
-                              "critical": case.critical, "analysis_state": case.analysis_state,
+                              "critical": case.critical, "analysis_state": progress["analysis_state"],
                               "content_version": case.content_version, "updated_at": case.updated_at,
-                              "progress": self.pipeline.case_progress(case_id)})
+                              "progress": progress})
 
     def api_report(self, request: Request) -> Response:
         case_id = request.params["case_id"]
