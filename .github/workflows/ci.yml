@@ -79,7 +79,7 @@ jobs:
           python -m pms golden --out artifacts/golden-summary.json
       - name: Upload golden summary
         if: always()
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: golden-summary
           path: artifacts/golden-summary.json
@@ -135,7 +135,7 @@ jobs:
           python -m pytest tests/ui/playwright -v
       - name: Upload screenshots and server log
         if: always()
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: ui-screenshots
           path: |
@@ -160,7 +160,7 @@ jobs:
           az bicep build --file infra/main.bicep --outfile artifacts/main.json
           az bicep build --file infra/tests/main.tests.bicep --outfile artifacts/main.tests.json
       - name: Upload compiled templates
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: arm-templates
           path: artifacts/*.json
@@ -205,7 +205,7 @@ jobs:
           $lines | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
       - name: Upload the PSRule report
         if: always()
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: psrule-report
           path: artifacts/ps-rule.sarif
