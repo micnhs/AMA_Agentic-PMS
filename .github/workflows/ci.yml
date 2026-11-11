@@ -29,7 +29,7 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4.2.2
       - name: Set up Python
-        uses: actions/setup-python@v5.3.0
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install ruff (pinned)
@@ -68,7 +68,7 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4.2.2
       - name: Set up Python
-        uses: actions/setup-python@v5.3.0
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Standard-library tests (nothing installed)
@@ -102,7 +102,7 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4.2.2
       - name: Set up Python
-        uses: actions/setup-python@v5.3.0
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install the pinned requirements (also proves the Azure pins resolve)
@@ -203,7 +203,7 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4.2.2
       - name: Set up Python
-        uses: actions/setup-python@v5.3.0
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Secret scan (standard library)

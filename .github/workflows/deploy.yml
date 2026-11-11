@@ -43,7 +43,7 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4.2.2
       - name: Set up Python
-        uses: actions/setup-python@v5.3.0
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.12"
       - name: Install the Azure Developer CLI
