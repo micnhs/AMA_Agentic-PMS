@@ -54,9 +54,9 @@ def exercise(store) -> dict:
     out: dict = {}
     clock = store.clock
     c1 = store.insert_case(case_id="CASE-A", case_key="CASE-A", status="EINGEGANGEN", severity="UNKNOWN")
-    c2 = store.insert_case(case_id="CASE-B", case_key="CASE-B", status="TRIAGE_ERFORDERLICH", critical=True,
-                           severity="DEATH", urgency={"level": "critical"}, rule_sets=["EU-MDR"],
-                           metadata={"note": "x", "n": 1.5}, deadline_waiver=None, content_version=3)
+    store.insert_case(case_id="CASE-B", case_key="CASE-B", status="TRIAGE_ERFORDERLICH", critical=True,
+                      severity="DEATH", urgency={"level": "critical"}, rule_sets=["EU-MDR"],
+                      metadata={"note": "x", "n": 1.5}, deadline_waiver=None, content_version=3)
     out["defaults"] = dataclasses.asdict(c1)
     clock.set("2026-11-16T09:00:00Z")
     out["update_case"] = dataclasses.asdict(store.update_case("CASE-A", critical=1, metadata={"k": [1, 2]},

@@ -1,8 +1,10 @@
-# Azure runtime dependencies (exact pins, versions taken from official sources on 10 Nov 2026).
+# Azure runtime dependencies (exact pins; every version checked on pypi.org on 11 Nov 2026).
 # The offline mode, the golden run and all local tests use the Python 3.12 standard library only;
 # these packages are imported lazily inside the Azure adapters.
-agent-framework-core==1.25.0
-agent-framework-foundry==1.25.0
+# agent-framework-foundry has its own version line (latest 1.16.0); it was released together with
+# agent-framework-core 1.24.0 on 30 Oct 2026, so this pair is pinned together. Change both together.
+agent-framework-core==1.24.0
+agent-framework-foundry==1.16.0
 azure-identity==1.27.0
 azure-cosmos==4.17.1
 azure-search-documents==12.0.0

@@ -34,8 +34,8 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install ruff (pinned)
         run: python -m pip install ruff==0.6.9
-      - name: Ruff
-        run: ruff check .
+      - name: Ruff (findings also appear as annotations on the run summary page)
+        run: ruff check --output-format=github .
       - name: Shell scripts (bash -n and ShellCheck)
         run: |
           for file in scripts/*.sh scripts/lib/*.sh; do bash -n "$file"; done
@@ -215,3 +215,5 @@ jobs:
           python scripts/validate_workflows.py --no-pyyaml
           python -m pip install PyYAML==6.0.3
           python scripts/validate_workflows.py
+      - name: Resolve all pinned packages (pip --dry-run; a missing version fails here, also when tests fail)
+        run: python -m pip install --dry-run --ignore-installed -r requirements-dev.txt

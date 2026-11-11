@@ -58,8 +58,9 @@ def _import(name: str) -> Any:
         return importlib.import_module(name)
     except ImportError as exc:
         raise FoundryAdapterError(
-            f"{name} is not installed - the Foundry backend needs requirements.txt (agent-framework-core and "
-            f"agent-framework-foundry 1.25.0, azure-identity); use AGENT_BACKEND=offline locally") from exc
+            f"{name} is not installed - the Foundry backend needs the packages pinned in requirements.txt "
+            "(agent-framework-core, agent-framework-foundry, azure-identity); "
+            "use AGENT_BACKEND=offline locally") from exc
 
 
 def _attr(obj: Any, *names: str, what: str | None = None) -> Any:
@@ -191,7 +192,8 @@ def build_maf_tools(af: Any, names: tuple[str, ...], caller: Callable[[str, dict
     """Local read-only callables for MAF; every call goes through ``caller`` (ToolBox.call)."""
     decorator = _first(af, "tool", "ai_function")
     if decorator is None:
-        raise FoundryAdapterError("agent_framework.tool not found (agent-framework-core 1.25.0 expected)")
+        raise FoundryAdapterError(
+            "agent_framework.tool not found (expected in agent-framework-core as pinned in requirements.txt)")
     try:
         from pydantic import Field as pydantic_field  # type: ignore[import-not-found]
     except ImportError:
