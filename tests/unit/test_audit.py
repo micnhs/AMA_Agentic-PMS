@@ -69,7 +69,9 @@ class AuditChain(unittest.TestCase):
         self.assertEqual((result.ok, result.first_break_seq), (False, 3))
 
     def test_rewriting_a_hash_breaks_the_next_link(self) -> None:
-        result = self.tampered("UPDATE audit SET hash = 'f' || substr(hash, 2) WHERE seq = 1")
+        # Flip the first hex digit. A fixed 'f' was a no-op for a hash that already starts with 'f' (1 run in 16).
+        result = self.tampered("UPDATE audit SET hash = (CASE WHEN substr(hash, 1, 1) = 'f' THEN 'e' ELSE 'f' END)"
+                               " || substr(hash, 2) WHERE seq = 1")
         self.assertFalse(result.ok)
         self.assertIn(result.first_break_seq, (1, 2))
 

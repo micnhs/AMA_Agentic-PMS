@@ -1,3 +1,5 @@
+#Requires -Version 7.2
+
 <#
 .SYNOPSIS
     Preflight checks before 'azd provision' (also the azd preprovision hook).

@@ -1,3 +1,5 @@
+#Requires -Version 7.2
+
 <#
 .SYNOPSIS
     Loads the 12 golden letters and the 6 seed messages (synthetic data only).

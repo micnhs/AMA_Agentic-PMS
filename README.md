@@ -152,7 +152,7 @@ Details: [docs/architecture.md](docs/architecture.md) and the decision records
 
 | | Offline (local) | Azure deployment |
 |---|---|---|
-| Software | **Python 3.12 or newer** and bash, or PowerShell 7.2 or newer. Nothing to install. | Azure CLI 2.67 or newer, Azure Developer CLI 1.18 or newer, Python 3.12 or newer, bash or PowerShell 7.2 or newer. No local Docker: images are built in Azure Container Registry. |
+| Software | **Python 3.12 or newer** and bash, or PowerShell 7.2 or newer (`pwsh`). No Python packages to install. | Azure CLI 2.67 or newer, Azure Developer CLI 1.18 or newer, Python 3.12 or newer, bash or PowerShell 7.2 or newer (`pwsh`). No local Docker: images are built in Azure Container Registry. |
 | Azure roles | – | **Owner**, or **Contributor plus User Access Administrator**, on the subscription. The template creates the resource group, role assignments, a custom role, a policy assignment and a budget. |
 | Microsoft Entra rights | – | The right to create app registrations (tenant setting "Users can register applications", or a role such as Application Developer, Cloud Application Administrator or Application Administrator) – **or** an app registration prepared by an admin ([bring your own](#bring-your-own-app-registration)). |
 | Region | – | One EU region. Default **Sweden Central** (`swedencentral`); fallback Germany West Central (`germanywestcentral`). |
@@ -160,6 +160,9 @@ Details: [docs/architecture.md](docs/architecture.md) and the decision records
 | Other | – | 15 resource providers registered (the preflight names any missing one); an e-mail address for budget and operations alerts (`DEPLOYER_EMAIL`). |
 
 The preflight script checks all of this before anything is created.
+
+On Windows, the `.ps1` scripts need PowerShell 7 (`pwsh`); the *Windows PowerShell* 5.1 that comes with
+Windows is not supported (see [step 1 of the quick start](#offline-quick-start-no-installs)).
 
 ## Offline quick start (no installs)
 
@@ -169,6 +172,18 @@ install. The agents are a deterministic offline stand-in with fixed answers, lab
 **1. Get the code.** Clone this repository or unzip the delivered `pms-agent-demo.zip`. Open a terminal
 in the repository folder (the folder that contains this README).
 
+On Windows:
+
+- Run the PowerShell commands in **PowerShell 7**: type `pwsh` and press Enter (install it once with
+  `winget install --id Microsoft.PowerShell --source winget`). The *Windows PowerShell* 5.1 that comes
+  with Windows is not supported; the scripts stop at once with a `#requires` message for PowerShell 7.2.
+- If you unzipped a downloaded zip, Windows marks the files as coming from the internet, and PowerShell
+  then asks before every script or blocks it. Unblock the files once, in the repository folder and only
+  for a copy from a source you trust: `Get-ChildItem -Recurse -File | Unblock-File`. A `git clone` needs
+  no unblocking.
+- Prefer a folder that OneDrive does not sync, for example `C:\src`: the demo writes its SQLite
+  database and the local alert outbox to `var/`.
+
 **2. Start the demo.** It loads the 12 synthetic letters and the 6 seed messages on start, runs the
 offline agents in the background and keeps running until you press Ctrl+C.
 
@@ -176,7 +191,7 @@ offline agents in the background and keeps running until you press Ctrl+C.
 bash scripts/run-local.sh
 ```
 
-PowerShell 7.2 or newer:
+PowerShell 7.2 or newer (in `pwsh`, see step 1):
 
 ```powershell
 ./scripts/run-local.ps1
@@ -245,7 +260,9 @@ Notes:
 
 Everything goes into one new resource group `rg-<environment name>` in one EU region. No secret is stored
 anywhere: the app uses a managed identity, people sign in with Microsoft Entra ID, and the pipeline uses
-OpenID Connect. Call the scripts as shown (`bash scripts/<name>.sh` or `./scripts/<name>.ps1`).
+OpenID Connect. Call the scripts as shown (`bash scripts/<name>.sh` or `./scripts/<name>.ps1`). On Windows,
+run the `.ps1` scripts in PowerShell 7 (`pwsh`) and unblock a downloaded zip first
+([quick start, step 1](#offline-quick-start-no-installs)).
 
 ### Step 1 – Sign in and create an azd environment
 
@@ -301,7 +318,8 @@ PowerShell: `./scripts/deploy.ps1 -EnvironmentName pms-demo`
 
 `deploy` runs the preflight and then `azd up`. You can also run `azd up` directly; its preprovision hook
 runs the same preflight. For the Gate C evidence, record the output:
-`bash scripts/deploy.sh -e pms-demo 2>&1 | tee deploy.log`.
+`bash scripts/deploy.sh -e pms-demo 2>&1 | tee deploy.log` (PowerShell:
+`./scripts/deploy.ps1 -EnvironmentName pms-demo *>&1 | Tee-Object -FilePath deploy.log`).
 
 What happens:
 
@@ -628,7 +646,7 @@ folder if you no longer need it.
 | Message or symptom | What to do |
 |---|---|
 | `Python 3.12 or newer was not found.` | Install Python 3.12 or newer and open a new terminal. |
-| `PowerShell ... is too old.` / scripts are blocked by the execution policy | Use PowerShell 7.2 or newer (`pwsh`). For a downloaded zip: `Unblock-File` on the scripts, or `pwsh -ExecutionPolicy Bypass -File ./scripts/run-local.ps1`. |
+| A `#requires` message for PowerShell 7.2, `PowerShell ... is too old.`, a security warning before each script, or a script blocked by the execution policy | Start PowerShell 7 with `pwsh` (install: `winget install --id Microsoft.PowerShell --source winget`) and run the script there. For a downloaded zip, run `Get-ChildItem -Recurse -File \| Unblock-File` once in the repository folder (only for a copy from a source you trust), or use `git clone`. |
 | The start prints `Port 8000 is in use - using port … instead.`, or stops with "Address already in use" when you passed `--port` | Use the printed URL, or pass a free port: `bash scripts/run-local.sh --port 8765` (PowerShell: `./scripts/run-local.ps1 --port 8765`). |
 | Every page shows *Sign in* / the API answers `401` "not signed in: pick a demo user" | Pick a user on the sign-in page (the browser must accept cookies), or send the header `X-Demo-User: <user>`. |
 | `403` "Refused: ... (your roles: ...)" | The fixed role matrix does not allow this action for the user; the attempt is recorded (`ACCESS_DENIED`). Switch to the right user. |

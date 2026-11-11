@@ -1,3 +1,5 @@
+#Requires -Version 7.2
+
 <#
 .SYNOPSIS
     Deletes every Azure resource of the selected azd environment ('azd down --purge') after an explicit confirmation.

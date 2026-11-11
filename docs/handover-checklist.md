@@ -37,9 +37,11 @@ The sandbox that built this repository has no browser, so the Gate B screenshots
 - [ ] Model quota for `gpt-6-astra` and `gpt-6.1-sol` as **Data Zone Standard** in the chosen EU region
       (default Sweden Central, 50 thousand tokens per minute each). The preflight checks it.
 - [ ] Tools: Azure CLI 2.67 or newer, Azure Developer CLI 1.18 or newer, Python 3.12 or newer, bash
-      (on Windows: PowerShell 7.2 or newer for the `.ps1` scripts).
+      (on Windows: PowerShell 7.2 or newer for the `.ps1` scripts, started with `pwsh`; Windows PowerShell
+      5.1 is not supported).
 - [ ] An unchanged copy of the repository: a fresh `git clone` or the delivered zip, unpacked into a new,
-      empty folder.
+      empty folder. Prefer a folder outside OneDrive (for example `C:\src`). For a downloaded zip on
+      Windows, unblock the files first (README, *Offline quick start*, step 1).
 - [ ] A demo mailbox for critical-case e-mails (your own address is fine; never a real third party).
 
 ## Steps

@@ -1,3 +1,5 @@
+#Requires -Version 7.2
+
 <#
 .SYNOPSIS
     azd postprovision hook. Best effort: it never fails the deployment and prints the fix instead.

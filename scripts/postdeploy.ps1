@@ -1,3 +1,5 @@
+#Requires -Version 7.2
+
 <#
 .SYNOPSIS
     azd postdeploy hook: waits until GET /healthz answers, builds the Azure AI Search knowledge index and

@@ -1,3 +1,5 @@
+#Requires -Version 7.2
+
 <#
 .SYNOPSIS
     Recomputes the audit hash chain and reports the first break (concept 8).

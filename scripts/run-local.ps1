@@ -1,3 +1,5 @@
+#Requires -Version 7.2
+
 <#
 .SYNOPSIS
     Starts the demo offline: no Azure, no model calls, Python 3.12 standard library only, nothing to install.

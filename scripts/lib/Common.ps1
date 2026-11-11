@@ -2,12 +2,16 @@
 $ErrorActionPreference = 'Stop'
 $PSNativeCommandUseErrorActionPreference = $false
 
+# Second guard behind '#Requires -Version 7.2' in every script. 'throw', not 'exit': an exit in a
+# dot-sourced file ends only this file, and the calling script would carry on.
 if ($PSVersionTable.PSVersion -lt [version]'7.2') {
-    [Console]::Error.WriteLine("[pms] FAILED: PowerShell $($PSVersionTable.PSVersion) is too old. Fix: Install PowerShell 7.2+ (https://aka.ms/powershell) and run the script with pwsh.")
-    exit 1
+    throw "[pms] FAILED: PowerShell $($PSVersionTable.PSVersion) is too old. Fix: Install PowerShell 7.2+ (https://aka.ms/powershell), start it with pwsh and run the script there."
 }
 
 $script:PmsRepoRoot = (Resolve-Path (Join-Path (Join-Path $PSScriptRoot '..') '..')).Path
+
+# Python writes UTF-8 also when its output is piped (for example into Tee-Object for deploy.log).
+$env:PYTHONUTF8 = '1'
 
 function Write-PmsInfo([string]$Message) {
     Write-Host "[pms] $Message"
@@ -57,7 +61,8 @@ function Invoke-PmsAzJson {
 
 # Path of the first Python >= 3.12 interpreter, or stops.
 function Get-PmsPython {
-    $probe = 'import sys; print(sys.executable if sys.version_info >= (3, 12) else "")'
+    # No double quotes in the probe: PowerShell 7.2 passes them to native programs unescaped.
+    $probe = 'import sys; print(sys.executable if sys.version_info >= (3, 12) else str())'
     foreach ($candidate in @('python3', 'python', 'py -3')) {
         $parts = $candidate -split ' '
         $command = Get-Command $parts[0] -ErrorAction SilentlyContinue

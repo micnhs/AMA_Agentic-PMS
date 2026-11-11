@@ -1,3 +1,5 @@
+#Requires -Version 7.2
+
 <#
 .SYNOPSIS
     Live smoke test against the Azure deployment (Gate C): python -m pms smoke-test --part 1|2.

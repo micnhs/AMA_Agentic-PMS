@@ -5,6 +5,9 @@
 PMS_REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 export PMS_REPO_ROOT
 
+# Python writes UTF-8 also when its output is piped (for example in Git Bash on Windows).
+export PYTHONUTF8=1
+
 pms_info() { printf '[pms] %s\n' "$*"; }
 pms_warn() { printf '[pms] WARNING: %s\n' "$*" >&2; }
 

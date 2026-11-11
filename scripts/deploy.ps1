@@ -1,3 +1,5 @@
+#Requires -Version 7.2
+
 <#
 .SYNOPSIS
     Deploys the demo to Azure: preflight, then 'azd up' (provision + deploy).
